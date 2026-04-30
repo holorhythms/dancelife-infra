@@ -42,15 +42,18 @@ data "azuread_service_principal" "dancelife_app" {
 }
 data "azurerm_client_config" "current" {}
 
-// Variable definitions
-variable "app_service_name" {
-    type        = string
-    default     = "dancelife-test-nodejs"
-    description = "Name of the app service."
+// Locals definitions
+locals {
+    app_service_name = "dancelife-app-service-${var.environment_name}"
+    postgres_server_name = "dancelife-postgres-server-${var.environment_name}"
+    resource_group_name = "dancelife-rg-${var.environment_name}"
+    storage_account_name = "dancelifestorage${var.environment_name}"
 }
+
+// Variable definitions
 variable "environment_name" {
     type        = string
-    default     = "test"
+    default     = "dev"
     description = "Name of the environment."
 }
 variable "postgres_database_name" {
@@ -58,28 +61,13 @@ variable "postgres_database_name" {
     default     = "dancelife"
     description = "Name of the PostgreSQL database."
 }
-variable "postgres_server_name" {
-    type        = string
-    default     = "dancelife-test-nodejs-server"
-    description = "Name of the PostgreSQL server."
-}
 variable "resource_group_for_config" {
     type        = string
     default     = "dancelife-general"
     description = "Name of the resource group for configuration."
 }
-variable "resource_group_name" {
-    type        = string
-    default     = "dancelife-test-1"
-    description = "Name of the resource group."
-}
 variable "resource_group_region" {
     type        = string
     default     = "westus2"
     description = "Location of the resource group."
-}
-variable "storage_account_name" {
-    type        = string
-    default     = "dancelifetest"
-    description = "Name of the storage account."
 }

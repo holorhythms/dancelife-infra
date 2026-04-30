@@ -1,5 +1,19 @@
 // Helper resources
-resource "random_string" "name" {
+resource "random_string" "vnet_name_suffix" {
+  length  = 8
+  special = false
+  upper   = false
+  lower   = true
+  numeric = false
+}
+resource "random_string" "subnet_name_suffix_1" {
+  length  = 8
+  special = false
+  upper   = false
+  lower   = true
+  numeric = false
+}
+resource "random_string" "subnet_name_suffix_2" {
   length  = 8
   special = false
   upper   = false
@@ -10,11 +24,11 @@ resource "random_string" "name" {
 // Resources to manage via Terraform
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_region
-  name     = var.resource_group_name
+  name     = local.resource_group_name
 }
 resource "azurerm_postgresql_flexible_server" "main_app_db" {
   location            = var.resource_group_region
-  name                = var.postgres_server_name
+  name                = local.postgres_server_name
   resource_group_name = azurerm_resource_group.rg.name
   zone                = "2"
   administrator_login           = data.azurerm_key_vault_secret.postgres_prod_user.value
@@ -89,12 +103,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres_link" {
 resource "azurerm_virtual_network" "main_vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = var.resource_group_region
-  name                = "vnet-${random_string.name.result}"
+  name                = "vnet-${random_string.vnet_name_suffix.result}"
   resource_group_name = azurerm_resource_group.rg.name
 }
 resource "azurerm_subnet" "subnet_db" {
   address_prefixes     = ["10.0.2.0/24"]
-  name                 = "subnet-${random_string.name.result}"
+  name                 = "subnet-${random_string.subnet_name_suffix_1.result}"
   resource_group_name  = azurerm_resource_group.rg.name
   service_endpoints    = ["Microsoft.Storage"]
   virtual_network_name = azurerm_virtual_network.main_vnet.name
@@ -111,7 +125,7 @@ resource "azurerm_subnet" "subnet_db" {
 }
 resource "azurerm_subnet" "subnet_app" {
   address_prefixes     = ["10.0.1.0/24"]
-  name                 = "subnet-${random_string.name.result}"
+  name                 = "subnet-${random_string.subnet_name_suffix_2.result}"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.main_vnet.name
   delegation {
@@ -130,7 +144,7 @@ resource "azurerm_storage_account" "main_storage" {
   account_tier                    = "Standard"
   allow_nested_items_to_be_public = false
   location                        = var.resource_group_region
-  name                            = var.storage_account_name
+  name                            = local.storage_account_name
   resource_group_name             = azurerm_resource_group.rg.name
 }
 resource "azurerm_role_assignment" "storage_admins_assignment" {
@@ -176,12 +190,12 @@ resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app_service_insights.connection_string
     APP_KEY                                    = data.azurerm_key_vault_secret.adonis_app_key.value
-    AZURE_STORAGE_ACCOUNT_NAME                 = var.storage_account_name
-    AZURE_STORAGE_ACCOUNT_URL                  = "https://${var.storage_account_name}.blob.core.windows.net"
+    AZURE_STORAGE_ACCOUNT_NAME                 = local.storage_account_name
+    AZURE_STORAGE_ACCOUNT_URL                  = "https://${local.storage_account_name}.blob.core.windows.net"
     AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
     DB_DATABASE                                = var.postgres_database_name
-    DB_HOST                                    = "${var.postgres_server_name}.postgres.database.azure.com"
+    DB_HOST                                    = "${local.postgres_server_name}.postgres.database.azure.com"
     DB_PASSWORD                                = data.azurerm_key_vault_secret.postgres_prod_pw.value
     DB_PORT                                    = "5432"
     DB_USER                                    = data.azurerm_key_vault_secret.postgres_prod_user.value
@@ -200,17 +214,17 @@ resource "azurerm_linux_web_app" "main_app_service" {
   }
   https_only          = true
   location            = var.resource_group_region
-  name                = var.app_service_name
+  name                = local.app_service_name
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
   tags = {
-    "hidden-link: /app-insights-resource-id" = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}/providers/microsoft.insights/components/${var.app_service_name}"
+    "hidden-link: /app-insights-resource-id" = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${local.resource_group_name}/providers/microsoft.insights/components/${local.app_service_name}"
   }
   virtual_network_subnet_id = azurerm_subnet.subnet_app.id
   connection_string {
     name  = "AZURE_POSTGRESQL_CONNECTIONSTRING"
     type  = "Custom"
-    value = "Database=${var.postgres_database_name};Server=${var.postgres_server_name}.postgres.database.azure.com;User Id=${data.azurerm_key_vault_secret.postgres_prod_user.value};Password=${data.azurerm_key_vault_secret.postgres_prod_pw.value}"
+    value = "Database=${var.postgres_database_name};Server=${local.postgres_server_name}.postgres.database.azure.com;User Id=${data.azurerm_key_vault_secret.postgres_prod_user.value};Password=${data.azurerm_key_vault_secret.postgres_prod_pw.value}"
   }
   identity {
     type = "SystemAssigned"
@@ -238,7 +252,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
 resource "azurerm_application_insights" "app_service_insights" {
   application_type    = "web"
   location            = var.resource_group_region
-  name                = var.app_service_name
+  name                = "${local.app_service_name}-insights"
   resource_group_name = azurerm_resource_group.rg.name
   sampling_percentage = 0
 }
