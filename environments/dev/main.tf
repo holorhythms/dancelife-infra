@@ -141,7 +141,7 @@ resource "azurerm_role_assignment" "storage_app_service_assignment" {
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_linux_web_app.main_app_service.identity[0].principal_id
 }
-resource "azurerm_storage_account_queue_properties" "res-599" {
+resource "azurerm_storage_account_queue_properties" "storage_queue_properties" {
   storage_account_id = azurerm_storage_account.main_storage.id
   hour_metrics {
     version = "1.0"
