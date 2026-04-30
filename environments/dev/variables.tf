@@ -48,6 +48,11 @@ variable "app_service_name" {
     default     = "dancelife-test-nodejs"
     description = "Name of the app service."
 }
+variable "environment_name" {
+    type        = string
+    default     = "test"
+    description = "Name of the environment."
+}
 variable "postgres_database_name" {
     type        = string
     default     = "dancelife"

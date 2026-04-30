@@ -1,3 +1,12 @@
+// Helper resources
+resource "random_string" "name" {
+  length  = 8
+  special = false
+  upper   = false
+  lower   = true
+  numeric = false
+}
+
 // Resources to manage via Terraform
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_region
@@ -80,12 +89,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres_link" {
 resource "azurerm_virtual_network" "main_vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = var.resource_group_region
-  name                = "vnet-xwnohgdm"
+  name                = "vnet-${random_string.name.result}"
   resource_group_name = azurerm_resource_group.rg.name
 }
 resource "azurerm_subnet" "subnet_db" {
   address_prefixes     = ["10.0.2.0/24"]
-  name                 = "subnet-jb5466scctmlc"
+  name                 = "subnet-${random_string.name.result}"
   resource_group_name  = azurerm_resource_group.rg.name
   service_endpoints    = ["Microsoft.Storage"]
   virtual_network_name = azurerm_virtual_network.main_vnet.name
@@ -102,7 +111,7 @@ resource "azurerm_subnet" "subnet_db" {
 }
 resource "azurerm_subnet" "subnet_app" {
   address_prefixes     = ["10.0.1.0/24"]
-  name                 = "subnet-mbovmyie"
+  name                 = "subnet-${random_string.name.result}"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.main_vnet.name
   delegation {
@@ -158,18 +167,18 @@ resource "azurerm_storage_account_queue_properties" "storage_queue_properties" {
 }
 resource "azurerm_service_plan" "app_service_plan" {
   location            = var.resource_group_region
-  name                = "ASP-dancelifedev2-ad60"
+  name                = "dancelife-plan-${var.environment_name}"
   os_type             = "Linux"
   resource_group_name = azurerm_resource_group.rg.name
   sku_name            = "B1"
 }
 resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
-    APPLICATIONINSIGHTS_CONNECTION_STRING      = "InstrumentationKey=6569cf1a-c576-4f82-9347-5ddea2cd88cf;IngestionEndpoint=https://westus3-1.in.applicationinsights.azure.com/;LiveEndpoint=https://westus3.livediagnostics.monitor.azure.com/;ApplicationId=a4cdcf56-403b-4742-a06d-ed8c6a5d24f9"
+    APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app_service_insights.connection_string
     APP_KEY                                    = data.azurerm_key_vault_secret.adonis_app_key.value
     AZURE_STORAGE_ACCOUNT_NAME                 = var.storage_account_name
     AZURE_STORAGE_ACCOUNT_URL                  = "https://${var.storage_account_name}.blob.core.windows.net"
-    AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-dev"
+    AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
     DB_DATABASE                                = var.postgres_database_name
     DB_HOST                                    = "${var.postgres_server_name}.postgres.database.azure.com"
