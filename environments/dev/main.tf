@@ -3,7 +3,7 @@ resource "azurerm_resource_group" "rg" {
   location = var.resource_group_region
   name     = var.resource_group_name
 }
-resource "azurerm_postgresql_flexible_server" "sql_db" {
+resource "azurerm_postgresql_flexible_server" "main_app_db" {
   location            = var.resource_group_region
   name                = var.postgres_server_name
   resource_group_name = azurerm_resource_group.rg.name
@@ -17,78 +17,78 @@ resource "azurerm_postgresql_flexible_server" "sql_db" {
     active_directory_auth_enabled = true
   }
 }
-resource "azurerm_postgresql_flexible_server_active_directory_administrator" "res-2" {
+resource "azurerm_postgresql_flexible_server_active_directory_administrator" "main_app_db_admin_group" {
   object_id           = data.azuread_group.dancelife_admins.object_id
   principal_name      = data.azuread_group.dancelife_admins.display_name
   principal_type      = "Group"
   resource_group_name = azurerm_resource_group.rg.name
-  server_name         = azurerm_postgresql_flexible_server.sql_db.name
+  server_name         = azurerm_postgresql_flexible_server.main_app_db.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   depends_on = [
-    azurerm_postgresql_flexible_server.sql_db,
+    azurerm_postgresql_flexible_server.main_app_db,
   ]
 }
-resource "azurerm_postgresql_flexible_server_configuration" "res-13" {
+resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_timezone" {
   name      = "TimeZone"
-  server_id = azurerm_postgresql_flexible_server.sql_db.id
+  server_id = azurerm_postgresql_flexible_server.main_app_db.id
   value     = "UTC"
 }
-resource "azurerm_postgresql_flexible_server_configuration" "res-64" {
+resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_extensions" {
   name      = "azure.extensions"
-  server_id = azurerm_postgresql_flexible_server.sql_db.id
+  server_id = azurerm_postgresql_flexible_server.main_app_db.id
   value     = "POSTGIS,UUID-OSSP"
 }
-resource "azurerm_postgresql_flexible_server_configuration" "res-414" {
+resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_gdal" {
   name      = "postgis.gdal_enabled_drivers"
-  server_id = azurerm_postgresql_flexible_server.sql_db.id
+  server_id = azurerm_postgresql_flexible_server.main_app_db.id
   value     = "DISABLE_ALL"
 }
-resource "azurerm_postgresql_flexible_server_configuration" "res-415" {
+resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_secure_transport" {
   name      = "require_secure_transport"
-  server_id = azurerm_postgresql_flexible_server.sql_db.id
+  server_id = azurerm_postgresql_flexible_server.main_app_db.id
   value     = "OFF"
 }
-resource "azurerm_postgresql_flexible_server_database" "res-562" {
+resource "azurerm_postgresql_flexible_server_database" "main_app_db_database" {
   name      = "dancelife"
-  server_id = azurerm_postgresql_flexible_server.sql_db.id
+  server_id = azurerm_postgresql_flexible_server.main_app_db.id
 }
-resource "azurerm_postgresql_flexible_server_firewall_rule" "res-564" {
+resource "azurerm_postgresql_flexible_server_firewall_rule" "main_app_db_firewall_rule_1" {
   end_ip_address   = "0.0.0.0"
   name             = "AllowAllAzureServicesAndResourcesWithinAzureIps_2025-8-7_17-15-31"
-  server_id        = azurerm_postgresql_flexible_server.sql_db.id
+  server_id        = azurerm_postgresql_flexible_server.main_app_db.id
   start_ip_address = "0.0.0.0"
 }
-resource "azurerm_postgresql_flexible_server_firewall_rule" "res-565" {
+resource "azurerm_postgresql_flexible_server_firewall_rule" "main_app_db_firewall_rule_2" {
   end_ip_address   = "255.255.255.255"
   name             = "AllowAll_2025-8-7_16-1-12"
-  server_id        = azurerm_postgresql_flexible_server.sql_db.id
+  server_id        = azurerm_postgresql_flexible_server.main_app_db.id
   start_ip_address = "0.0.0.0"
 }
-resource "azurerm_private_dns_zone" "res-568" {
+resource "azurerm_private_dns_zone" "postgres" {
   name                = "privatelink.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.rg.name
 }
-resource "azurerm_private_dns_zone_virtual_network_link" "res-570" {
+resource "azurerm_private_dns_zone_virtual_network_link" "postgres_link" {
   name                  = "link-jb5466scctmlc"
-  private_dns_zone_name = "privatelink.postgres.database.azure.com"
+  private_dns_zone_name = azurerm_private_dns_zone.postgres.name
   resource_group_name   = azurerm_resource_group.rg.name
-  virtual_network_id    = azurerm_virtual_network.res-571.id
+  virtual_network_id    = azurerm_virtual_network.main_vnet.id
   depends_on = [
-    azurerm_private_dns_zone.res-568,
+    azurerm_private_dns_zone.postgres,
   ]
 }
-resource "azurerm_virtual_network" "res-571" {
+resource "azurerm_virtual_network" "main_vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = var.resource_group_region
   name                = "vnet-xwnohgdm"
   resource_group_name = azurerm_resource_group.rg.name
 }
-resource "azurerm_subnet" "res-572" {
+resource "azurerm_subnet" "subnet_db" {
   address_prefixes     = ["10.0.2.0/24"]
   name                 = "subnet-jb5466scctmlc"
   resource_group_name  = azurerm_resource_group.rg.name
   service_endpoints    = ["Microsoft.Storage"]
-  virtual_network_name = "vnet-xwnohgdm"
+  virtual_network_name = azurerm_virtual_network.main_vnet.name
   delegation {
     name = "dlg-database"
     service_delegation {
@@ -97,14 +97,14 @@ resource "azurerm_subnet" "res-572" {
     }
   }
   depends_on = [
-    azurerm_virtual_network.res-571,
+    azurerm_virtual_network.main_vnet,
   ]
 }
-resource "azurerm_subnet" "res-573" {
+resource "azurerm_subnet" "subnet_app" {
   address_prefixes     = ["10.0.1.0/24"]
   name                 = "subnet-mbovmyie"
   resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = "vnet-xwnohgdm"
+  virtual_network_name = azurerm_virtual_network.main_vnet.name
   delegation {
     name = "delegation"
     service_delegation {
@@ -113,7 +113,7 @@ resource "azurerm_subnet" "res-573" {
     }
   }
   depends_on = [
-    azurerm_virtual_network.res-571,
+    azurerm_virtual_network.main_vnet,
   ]
 }
 resource "azurerm_storage_account" "main_storage" {
@@ -139,7 +139,7 @@ resource "azurerm_role_assignment" "storage_app_assignment" {
 resource "azurerm_role_assignment" "storage_app_service_assignment" {
   scope                = azurerm_storage_account.main_storage.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_linux_web_app.app_service_main.identity[0].principal_id
+  principal_id         = azurerm_linux_web_app.main_app_service.identity[0].principal_id
 }
 resource "azurerm_storage_account_queue_properties" "res-599" {
   storage_account_id = azurerm_storage_account.main_storage.id
@@ -163,7 +163,7 @@ resource "azurerm_service_plan" "app_service_plan" {
   resource_group_name = azurerm_resource_group.rg.name
   sku_name            = "B1"
 }
-resource "azurerm_linux_web_app" "app_service_main" {
+resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING      = "InstrumentationKey=6569cf1a-c576-4f82-9347-5ddea2cd88cf;IngestionEndpoint=https://westus3-1.in.applicationinsights.azure.com/;LiveEndpoint=https://westus3.livediagnostics.monitor.azure.com/;ApplicationId=a4cdcf56-403b-4742-a06d-ed8c6a5d24f9"
     APP_KEY                                    = data.azurerm_key_vault_secret.adonis_app_key.value
@@ -197,7 +197,7 @@ resource "azurerm_linux_web_app" "app_service_main" {
   tags = {
     "hidden-link: /app-insights-resource-id" = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}/providers/microsoft.insights/components/${var.app_service_name}"
   }
-  virtual_network_subnet_id = azurerm_subnet.res-573.id
+  virtual_network_subnet_id = azurerm_subnet.subnet_app.id
   connection_string {
     name  = "AZURE_POSTGRESQL_CONNECTIONSTRING"
     type  = "Custom"
@@ -226,7 +226,7 @@ resource "azurerm_linux_web_app" "app_service_main" {
     }
   }
 }
-resource "azurerm_application_insights" "res-617" {
+resource "azurerm_application_insights" "app_service_insights" {
   application_type    = "web"
   location            = var.resource_group_region
   name                = var.app_service_name
