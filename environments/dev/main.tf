@@ -78,7 +78,7 @@ resource "azurerm_private_dns_zone" "postgres" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 resource "azurerm_private_dns_zone_virtual_network_link" "postgres_link" {
-  name                  = "link-jb5466scctmlc"
+  name                  = "vnet-link-${azurerm_virtual_network.main_vnet.name}-${azurerm_private_dns_zone.postgres.name}"
   private_dns_zone_name = azurerm_private_dns_zone.postgres.name
   resource_group_name   = azurerm_resource_group.rg.name
   virtual_network_id    = azurerm_virtual_network.main_vnet.id
