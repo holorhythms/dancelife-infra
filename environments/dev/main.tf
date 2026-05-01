@@ -1,5 +1,5 @@
-module "app-core" {
-    source = "../../modules/core-app"
+module "app_core" {
+    source = "../../modules/app-core"
 
-    environment_name = "dev"
+    environment_name = var.environment_name
 }
