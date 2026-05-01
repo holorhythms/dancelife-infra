@@ -8,6 +8,11 @@ variable "postgres_database_name" {
     default     = "dancelife"
     description = "Name of the PostgreSQL database."
 }
+variable "postgres_config_secure_transport" {
+    type        = string
+    default     = "OFF"
+    description = "Whether or not require_secure_transport is on or off for the Postgres server"
+}
 variable "resource_group_for_config" {
     type        = string
     default     = "dancelife-general"

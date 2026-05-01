@@ -69,7 +69,7 @@ resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_gdal" {
 resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_secure_transport" {
   name      = "require_secure_transport"
   server_id = azurerm_postgresql_flexible_server.main_app_db.id
-  value     = "OFF"
+  value     = var.postgres_config_secure_transport
 }
 resource "azurerm_postgresql_flexible_server_database" "main_app_db_database" {
   name      = "dancelife"
