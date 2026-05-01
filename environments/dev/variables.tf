@@ -1,7 +1,8 @@
-// Retrieve the current Azure client configuration
-data "azurerm_client_config" "current" {}
-
 // Define variables
+variable "subscription_id" {
+    type        = string
+    description = "Azure subscription ID."
+}
 variable "environment_name" {
     type        = string
     default     = "dev"
