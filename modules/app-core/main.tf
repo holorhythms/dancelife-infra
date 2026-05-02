@@ -38,6 +38,7 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
 
   authentication {
     active_directory_auth_enabled = true
+    password_auth_enabled = true
   }
 }
 resource "azurerm_postgresql_flexible_server_active_directory_administrator" "main_app_db_admin_group" {
