@@ -15,7 +15,7 @@ variable "postgres_config_secure_transport" {
 }
 variable "resource_group_for_config" {
     type        = string
-    default     = "dancelife-general"
+    default     = "dancelife-infra"
     description = "Name of the resource group for configuration."
 }
 variable "resource_group_region" {
