@@ -200,6 +200,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     DB_PASSWORD                                = data.azurerm_key_vault_secret.postgres_prod_pw.value
     DB_PORT                                    = "5432"
     DB_USER                                    = data.azurerm_key_vault_secret.postgres_prod_user.value
+    DB_SSL                                     = var.postgres_config_secure_transport == "ON" ? "true" : "false"
     GOOGLE_MAPS_API_KEY                        = data.azurerm_key_vault_secret.google_maps_api_key.value
     HOST                                       = "0.0.0.0"
     LOG_LEVEL                                  = "debug"
