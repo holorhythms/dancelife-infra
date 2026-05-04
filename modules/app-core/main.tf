@@ -251,6 +251,11 @@ resource "azurerm_linux_web_app" "main_app_service" {
     }
   }
 }
+resource "azurerm_role_assignment" "app_service_keyvault_assignment" {
+  scope                = data.azurerm_key_vault.dancelife_vault.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_linux_web_app.main_app_service.identity[0].principal_id
+}
 resource "azurerm_application_insights" "app_service_insights" {
   application_type    = "web"
   location            = var.resource_group_region
