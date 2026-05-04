@@ -8,6 +8,16 @@ variable "postgres_database_name" {
     default     = "dancelife"
     description = "Name of the PostgreSQL database."
 }
+variable "postgres_config_backup_retention_days" {
+    type        = number
+    default     = 7
+    description = "Number of days to retain backups for the PostgreSQL server."
+}
+variable "postgres_config_geo_redundant_backup_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not geo-redundant backup is enabled for the PostgreSQL server."
+}
 variable "postgres_config_secure_transport" {
     type        = string
     default     = "OFF"

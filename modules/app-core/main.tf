@@ -36,6 +36,8 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
   administrator_password_wo_version = "1"
   sku_name = "B_Standard_B2s"
   version = "17"
+  backup_retention_days = var.postgres_config_backup_retention_days
+  geo_redundant_backup_enabled = var.postgres_config_geo_redundant_backup_enabled
 
   authentication {
     active_directory_auth_enabled = true
@@ -74,7 +76,7 @@ resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_secure_
   value     = var.postgres_config_secure_transport
 }
 resource "azurerm_postgresql_flexible_server_database" "main_app_db_database" {
-  name      = "dancelife"
+  name      = var.postgres_database_name
   server_id = azurerm_postgresql_flexible_server.main_app_db.id
 }
 resource "azurerm_postgresql_flexible_server_firewall_rule" "main_app_db_firewall_rule_1" {
