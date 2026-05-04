@@ -3,32 +3,12 @@ data "azurerm_key_vault" "dancelife_vault" {
     name                = "dancelife-terraform"
     resource_group_name = var.resource_group_for_config
 }
-data "azurerm_key_vault_secret" "adonis_app_key" {
-    name         = "adonis-app-key"
+data "azurerm_key_vault_secret" "postgres_user" {
+    name         = "postgres-user-${var.environment_name}"
     key_vault_id = data.azurerm_key_vault.dancelife_vault.id
 }
-data "azurerm_key_vault_secret" "google_maps_api_key" {
-    name         = "google-maps-api-key"
-    key_vault_id = data.azurerm_key_vault.dancelife_vault.id
-}
-data "azurerm_key_vault_secret" "postgres_prod_user" {
-    name         = "postgres-prod-user"
-    key_vault_id = data.azurerm_key_vault.dancelife_vault.id
-}
-data "azurerm_key_vault_secret" "postgres_prod_pw" {
-    name         = "postgres-prod-pw"
-    key_vault_id = data.azurerm_key_vault.dancelife_vault.id
-}
-data "azurerm_key_vault_secret" "workos_api_key" {
-    name         = "workos-api-key"
-    key_vault_id = data.azurerm_key_vault.dancelife_vault.id
-}
-data "azurerm_key_vault_secret" "workos_client_id" {
-    name         = "workos-client-id"
-    key_vault_id = data.azurerm_key_vault.dancelife_vault.id
-}
-data "azurerm_key_vault_secret" "workos_cookie_pw" {
-    name         = "workos-cookie-pw"
+data "azurerm_key_vault_secret" "postgres_pw" {
+    name         = "postgres-pw-${var.environment_name}"
     key_vault_id = data.azurerm_key_vault.dancelife_vault.id
 }
 

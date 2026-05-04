@@ -31,8 +31,9 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
   name                = local.postgres_server_name
   resource_group_name = azurerm_resource_group.rg.name
   zone                = "2"
-  administrator_login           = data.azurerm_key_vault_secret.postgres_prod_user.value
-  administrator_password        = data.azurerm_key_vault_secret.postgres_prod_pw.value
+  administrator_login               = data.azurerm_key_vault_secret.postgres_user.value
+  administrator_password_wo         = data.azurerm_key_vault_secret.postgres_pw.value
+  administrator_password_wo_version = "1"
   sku_name = "B_Standard_B2s"
   version = "17"
 
@@ -190,18 +191,18 @@ resource "azurerm_service_plan" "app_service_plan" {
 resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app_service_insights.connection_string
-    APP_KEY                                    = data.azurerm_key_vault_secret.adonis_app_key.value
+    APP_KEY                                    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=adonis-app-key)"
     AZURE_STORAGE_ACCOUNT_NAME                 = local.storage_account_name
     AZURE_STORAGE_ACCOUNT_URL                  = "https://${local.storage_account_name}.blob.core.windows.net"
     AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
     DB_DATABASE                                = var.postgres_database_name
     DB_HOST                                    = "${local.postgres_server_name}.postgres.database.azure.com"
-    DB_PASSWORD                                = data.azurerm_key_vault_secret.postgres_prod_pw.value
+    DB_PASSWORD                                = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=postgres-pw-${var.environment_name})"
     DB_PORT                                    = "5432"
-    DB_USER                                    = data.azurerm_key_vault_secret.postgres_prod_user.value
+    DB_USER                                    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=postgres-user-${var.environment_name})"
     DB_SSL                                     = var.postgres_config_secure_transport == "ON" ? "true" : "false"
-    GOOGLE_MAPS_API_KEY                        = data.azurerm_key_vault_secret.google_maps_api_key.value
+    GOOGLE_MAPS_API_KEY                        = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=google-maps-api-key)"
     HOST                                       = "0.0.0.0"
     LOG_LEVEL                                  = "debug"
     LOG_LEVEL_CLI                              = "info"
@@ -209,9 +210,9 @@ resource "azurerm_linux_web_app" "main_app_service" {
     PORT                                       = "8080"
     SESSION_DRIVER                             = "cookie"
     WEBSITES_PORT                              = "8080"
-    WORKOS_API_KEY                             = data.azurerm_key_vault_secret.workos_api_key.value
-    WORKOS_CLIENT_ID                           = data.azurerm_key_vault_secret.workos_client_id.value
-    WORKOS_COOKIE_PASSWORD                     = data.azurerm_key_vault_secret.workos_cookie_pw.value
+    WORKOS_API_KEY                             = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-api-key)"
+    WORKOS_CLIENT_ID                           = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-client-id)"
+    WORKOS_COOKIE_PASSWORD                     = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-cookie-pw)"
     XDT_MicrosoftApplicationInsights_Mode      = "default"
   }
   https_only          = true
@@ -226,7 +227,8 @@ resource "azurerm_linux_web_app" "main_app_service" {
   connection_string {
     name  = "AZURE_POSTGRESQL_CONNECTIONSTRING"
     type  = "Custom"
-    value = "Database=${var.postgres_database_name};Server=${local.postgres_server_name}.postgres.database.azure.com;User Id=${data.azurerm_key_vault_secret.postgres_prod_user.value};Password=${data.azurerm_key_vault_secret.postgres_prod_pw.value}"
+    value = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=postgres-connection-string-${var.environment_name})"
+    # value = "Database=${var.postgres_database_name};Server=${local.postgres_server_name}.postgres.database.azure.com;User Id=${data.azurerm_key_vault_secret.postgres_user.value};Password=${data.azurerm_key_vault_secret.postgres_pw.value}"
   }
   identity {
     type = "SystemAssigned"
