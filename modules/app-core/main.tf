@@ -11,7 +11,7 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
   administrator_login               = data.azurerm_key_vault_secret.postgres_user.value
   administrator_password_wo         = data.azurerm_key_vault_secret.postgres_pw.value
   administrator_password_wo_version = "1"
-  sku_name = "B_Standard_B2s"
+  sku_name = var.postgres_server_sku_name
   version = "17"
   backup_retention_days = var.postgres_config_backup_retention_days
   geo_redundant_backup_enabled = var.postgres_config_geo_redundant_backup_enabled
@@ -165,7 +165,7 @@ resource "azurerm_service_plan" "app_service_plan" {
   name                = "dancelife-plan-${var.environment_name}"
   os_type             = "Linux"
   resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = "B1"
+  sku_name            = var.app_service_sku_name
 }
 resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
@@ -237,10 +237,16 @@ resource "azurerm_role_assignment" "app_service_keyvault_assignment" {
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_linux_web_app.main_app_service.identity[0].principal_id
 }
+resource "azurerm_log_analytics_workspace" "app_service_insights_workspace" {
+  location            = var.resource_group_region
+  name                = "${local.app_service_name}-law"
+  resource_group_name = azurerm_resource_group.rg.name
+}
 resource "azurerm_application_insights" "app_service_insights" {
   application_type    = "web"
   location            = var.resource_group_region
   name                = "${local.app_service_name}-insights"
   resource_group_name = azurerm_resource_group.rg.name
+  workspace_id        = azurerm_log_analytics_workspace.app_service_insights_workspace.id
   sampling_percentage = 0
 }

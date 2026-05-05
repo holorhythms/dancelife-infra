@@ -3,7 +3,11 @@ module "app_core" {
 
     environment_name = var.environment_name
 
+    # App Service configuration
+    app_service_sku_name = "B1"
+
     # PostgreSQL configuration
+    postgres_server_sku_name = "B_Standard_B2s"
     postgres_config_backup_retention_days = 7
     postgres_config_geo_redundant_backup_enabled = false
     postgres_config_secure_transport = "OFF"
