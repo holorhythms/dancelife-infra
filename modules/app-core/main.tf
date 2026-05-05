@@ -1,26 +1,3 @@
-// Helper resources
-resource "random_string" "vnet_name_suffix" {
-  length  = 8
-  special = false
-  upper   = false
-  lower   = true
-  numeric = false
-}
-resource "random_string" "subnet_name_suffix_1" {
-  length  = 8
-  special = false
-  upper   = false
-  lower   = true
-  numeric = false
-}
-resource "random_string" "subnet_name_suffix_2" {
-  length  = 8
-  special = false
-  upper   = false
-  lower   = true
-  numeric = false
-}
-
 // Resources to manage via Terraform
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_region
@@ -107,12 +84,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres_link" {
 resource "azurerm_virtual_network" "main_vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = var.resource_group_region
-  name                = "vnet-${random_string.vnet_name_suffix.result}"
+  name                = "vnet-dancelife-${var.environment_name}"
   resource_group_name = azurerm_resource_group.rg.name
 }
 resource "azurerm_subnet" "subnet_db" {
   address_prefixes     = ["10.0.2.0/24"]
-  name                 = "subnet-${random_string.subnet_name_suffix_1.result}"
+  name                 = "subnet-dancelife-db-${var.environment_name}"
   resource_group_name  = azurerm_resource_group.rg.name
   service_endpoints    = ["Microsoft.Storage"]
   virtual_network_name = azurerm_virtual_network.main_vnet.name
@@ -129,7 +106,7 @@ resource "azurerm_subnet" "subnet_db" {
 }
 resource "azurerm_subnet" "subnet_app" {
   address_prefixes     = ["10.0.1.0/24"]
-  name                 = "subnet-${random_string.subnet_name_suffix_2.result}"
+  name                 = "subnet-dancelife-app-${var.environment_name}"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.main_vnet.name
   delegation {
