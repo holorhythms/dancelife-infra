@@ -17,6 +17,7 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
   geo_redundant_backup_enabled = var.postgres_config_geo_redundant_backup_enabled
 
   authentication {
+    tenant_id = data.azurerm_client_config.current.tenant_id
     active_directory_auth_enabled = true
     password_auth_enabled = true
   }
@@ -127,6 +128,7 @@ resource "azurerm_storage_account" "main_storage" {
   location                        = var.resource_group_region
   name                            = local.storage_account_name
   resource_group_name             = azurerm_resource_group.rg.name
+  min_tls_version                 = "TLS1_2"
 }
 resource "azurerm_role_assignment" "storage_admins_assignment" {
   scope                = azurerm_storage_account.main_storage.id
