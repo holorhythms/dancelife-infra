@@ -47,3 +47,25 @@ variable "postgres_config_secure_transport" {
     default     = "OFF"
     description = "Whether or not require_secure_transport is on or off for the Postgres server"
 }
+
+# Azure Storage config
+variable "storage_account_delete_logs_enabled" {
+    type        = bool
+    default     = true
+    description = "Whether or not to enable logging of delete operations in the storage account."
+}
+variable "storage_account_read_logs_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable logging of read operations in the storage account."
+}
+variable "storage_account_write_logs_enabled" {
+    type        = bool
+    default     = true
+    description = "Whether or not to enable logging of write operations in the storage account."
+}
+variable "storage_account_log_retention_policy_days" {
+    type        = number
+    default     = 3
+    description = "Number of days to retain logs for the storage account."
+}

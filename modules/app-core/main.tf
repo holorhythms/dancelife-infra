@@ -153,10 +153,11 @@ resource "azurerm_storage_account_queue_properties" "storage_queue_properties" {
     version = "1.0"
   }
   logging {
-    delete  = false
-    read    = false
     version = "1.0"
-    write   = false
+    delete  = var.storage_account_delete_logs_enabled
+    read    = var.storage_account_read_logs_enabled
+    write   = var.storage_account_write_logs_enabled
+    retention_policy_days = var.storage_account_log_retention_policy_days
   }
   minute_metrics {
     version = "1.0"
