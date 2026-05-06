@@ -26,6 +26,11 @@ variable "app_service_auto_scale_enabled" {
     default     = false
     description = "Whether or not to enable auto-scaling for the App Service Plan. Only works with Premium plans."
 }
+variable "app_service_sampling_percentage" {
+    type        = number
+    default     = 100
+    description = "Percentage of requests to sample for Application Insights."
+}
 
 // PostgreSQL config
 variable "postgres_database_name" {

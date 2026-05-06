@@ -5,6 +5,8 @@ module "app_core" {
 
     # App Service configuration
     app_service_sku_name = "B1"
+    app_service_auto_scale_enabled = false
+    app_service_sampling_percentage = 100
 
     # PostgreSQL configuration
     postgres_server_sku_name = "B_Standard_B2s"
