@@ -79,3 +79,25 @@ variable "storage_account_log_retention_policy_days" {
     default     = 3
     description = "Number of days to retain logs for the storage account."
 }
+
+# Web portal static web app config
+variable "web_portal_sku_size" {
+    type        = string
+    default     = "Standard"
+    description = "SKU size for the web portal static web app."
+}
+variable "web_portal_sku_tier" {
+    type        = string
+    default     = "Standard"
+    description = "SKU tier for the web portal static web app."
+}
+variable "web_portal_repo_url" {
+    type        = string
+    default     = "https://github.com/Kressendo-Innovations/dancelife-web-portal"
+    description = "URL of the repository for the web portal static web app."
+}
+variable "web_portal_branch" {
+    type        = string
+    default     = "main"
+    description = "Branch of the repository to deploy for the web portal static web app."
+}

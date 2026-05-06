@@ -19,4 +19,8 @@ module "app_core" {
     storage_account_read_logs_enabled = false
     storage_account_write_logs_enabled = true
     storage_account_log_retention_policy_days = 7
+
+    # Web portal configuration
+    web_portal_sku_size = "Standard"
+    web_portal_sku_tier = "Standard"
 }

@@ -254,3 +254,38 @@ resource "azurerm_application_insights" "app_service_insights" {
   workspace_id        = azurerm_log_analytics_workspace.app_service_insights_workspace.id
   sampling_percentage = var.app_service_sampling_percentage
 }
+resource "azurerm_static_web_app" "web_portal" {
+  location            = var.resource_group_region
+  name                = local.web_portal_name
+  repository_branch   = var.web_portal_branch
+  repository_url      = var.web_portal_repo_url
+  repository_token    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=github-pat)"
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_size            = var.web_portal_sku_size
+  sku_tier            = var.web_portal_sku_tier
+
+  lifecycle {
+    ignore_changes = [
+      app_settings,
+    ]
+  }
+}
+resource "azapi_resource_action" "web_portal_app_settings" {
+  type        = "Microsoft.Web/staticSites@2022-09-01"
+  resource_id = azurerm_static_web_app.web_portal.id
+  action      = "config/appsettings"
+  method      = "PUT"
+
+  body = {
+    properties = {
+      VITE_BACKEND_BASEURL       = "https://${azurerm_linux_web_app.main_app_service.default_hostname}"
+      VITE_REDIRECT_FRONTEND_URI = "https://${azurerm_static_web_app.web_portal.default_host_name}"
+    }
+  }
+
+  response_export_values = []
+
+  depends_on = [
+    azurerm_static_web_app.web_portal,
+  ]
+}
