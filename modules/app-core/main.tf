@@ -171,6 +171,18 @@ resource "azurerm_service_plan" "app_service_plan" {
   sku_name                        = var.app_service_sku_name
   premium_plan_auto_scale_enabled = var.app_service_auto_scale_enabled
 }
+resource "azurerm_app_service_source_control" "main_app_service_source_control" {
+  app_id   = azurerm_linux_web_app.main_app_service.id
+  repo_url = var.app_service_repo_url
+  branch   = var.app_service_repo_branch
+
+  github_action_configuration {
+    code_configuration {
+      runtime_stack = "node"
+      runtime_version = "22"
+    }
+  }
+}
 resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app_service_insights.connection_string
@@ -259,7 +271,7 @@ resource "azurerm_static_web_app" "web_portal" {
   name                = local.web_portal_name
   repository_branch   = var.web_portal_branch
   repository_url      = var.web_portal_repo_url
-  repository_token    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=github-pat)"
+  repository_token    = data.azurerm_key_vault_secret.github_pat.value
   resource_group_name = azurerm_resource_group.rg.name
   sku_size            = var.web_portal_sku_size
   sku_tier            = var.web_portal_sku_tier

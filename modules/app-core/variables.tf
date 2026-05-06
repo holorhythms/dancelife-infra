@@ -26,6 +26,16 @@ variable "app_service_auto_scale_enabled" {
     default     = false
     description = "Whether or not to enable auto-scaling for the App Service Plan. Only works with Premium plans."
 }
+variable "app_service_repo_branch" {
+    type        = string
+    default     = "master"
+    description = "Branch of the repository to deploy for the App Service."
+}
+variable "app_service_repo_url" {
+    type        = string
+    default     = "https://github.com/Kressendo-Innovations/dancelife-adonisjs.git"
+    description = "URL of the repository for the App Service."
+}
 variable "app_service_sampling_percentage" {
     type        = number
     default     = 100
@@ -81,6 +91,16 @@ variable "storage_account_log_retention_policy_days" {
 }
 
 # Web portal static web app config
+variable "web_portal_branch" {
+    type        = string
+    default     = "main"
+    description = "Branch of the repository to deploy for the web portal static web app."
+}
+variable "web_portal_repo_url" {
+    type        = string
+    default     = "https://github.com/Kressendo-Innovations/dancelife-web-portal"
+    description = "URL of the repository for the web portal static web app."
+}
 variable "web_portal_sku_size" {
     type        = string
     default     = "Standard"
@@ -90,14 +110,4 @@ variable "web_portal_sku_tier" {
     type        = string
     default     = "Standard"
     description = "SKU tier for the web portal static web app."
-}
-variable "web_portal_repo_url" {
-    type        = string
-    default     = "https://github.com/Kressendo-Innovations/dancelife-web-portal"
-    description = "URL of the repository for the web portal static web app."
-}
-variable "web_portal_branch" {
-    type        = string
-    default     = "main"
-    description = "Branch of the repository to deploy for the web portal static web app."
 }

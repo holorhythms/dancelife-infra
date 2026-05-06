@@ -11,6 +11,10 @@ data "azurerm_key_vault_secret" "postgres_pw" {
     name         = "postgres-pw-${var.environment_name}"
     key_vault_id = data.azurerm_key_vault.dancelife_vault.id
 }
+data "azurerm_key_vault_secret" "github_pat" {
+  name         = "github-pat"
+  key_vault_id = data.azurerm_key_vault.dancelife_vault.id
+}
 
 // Existing resources to reference
 data "azuread_group" "dancelife_admins" {
