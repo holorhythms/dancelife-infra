@@ -21,6 +21,11 @@ variable "app_service_sku_name" {
     type        = string
     description = "SKU for the App Service Plan."
 }
+variable "app_service_auto_scale_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable auto-scaling for the App Service Plan. Only works with Premium plans."
+}
 
 // PostgreSQL config
 variable "postgres_database_name" {

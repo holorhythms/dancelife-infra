@@ -164,11 +164,12 @@ resource "azurerm_storage_account_queue_properties" "storage_queue_properties" {
   }
 }
 resource "azurerm_service_plan" "app_service_plan" {
-  location            = var.resource_group_region
-  name                = "dancelife-plan-${var.environment_name}"
-  os_type             = "Linux"
-  resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = var.app_service_sku_name
+  location                        = var.resource_group_region
+  name                            = "dancelife-plan-${var.environment_name}"
+  os_type                         = "Linux"
+  resource_group_name             = azurerm_resource_group.rg.name
+  sku_name                        = var.app_service_sku_name
+  premium_plan_auto_scale_enabled = var.app_service_auto_scale_enabled
 }
 resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
