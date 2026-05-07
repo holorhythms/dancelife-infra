@@ -201,7 +201,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     HOST                                       = "0.0.0.0"
     LOG_LEVEL                                  = "debug"
     LOG_LEVEL_CLI                              = "info"
-    NODE_ENV                                   = "development"
+    NODE_ENV                                   = "production"
     PORT                                       = "8080"
     SESSION_DRIVER                             = "cookie"
     WEBSITES_PORT                              = "8080"
