@@ -6,6 +6,7 @@ module "app_core" {
     # App Service configuration
     app_service_sku_name = "P1v3"
     app_service_auto_scale_enabled = true
+    app_service_local_dev_origins = []
     app_service_sampling_percentage = 25
 
     # PostgreSQL configuration
