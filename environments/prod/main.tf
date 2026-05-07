@@ -7,7 +7,8 @@ module "app_core" {
     app_service_sku_name = "P1v3"
     app_service_auto_scale_enabled = true
     app_service_local_dev_origins = []
-    app_service_sampling_percentage = 25
+    app_service_log_level = "info"
+    app_service_sampling_percentage = 100
 
     # PostgreSQL configuration
     postgres_server_sku_name = "GP_Standard_D2s_v3"

@@ -36,6 +36,11 @@ variable "app_service_local_dev_origins" {
     ]
     description = "List of allowed CORS origins for local development. These will be added to the App Service CORS settings"
 }
+variable "app_service_log_level" {
+    type        = string
+    default     = "debug"
+    description = "Log level for the App Service."
+}
 variable "app_service_ping_test_path" {
     type        = string
     default     = "/api/v1/auth/wos/login/urls"

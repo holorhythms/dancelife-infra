@@ -215,8 +215,8 @@ resource "azurerm_linux_web_app" "main_app_service" {
     DB_SSL                                     = var.postgres_config_secure_transport == "ON" ? "true" : "false"
     GOOGLE_MAPS_API_KEY                        = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=google-maps-api-key)"
     HOST                                       = "0.0.0.0"
-    LOG_LEVEL                                  = "debug"
-    LOG_LEVEL_CLI                              = "info"
+    LOG_LEVEL                                  = var.app_service_log_level
+    LOG_LEVEL_CLI                              = var.app_service_log_level
     NODE_ENV                                   = "production"
     PORT                                       = "8080"
     SESSION_DRIVER                             = "cookie"
