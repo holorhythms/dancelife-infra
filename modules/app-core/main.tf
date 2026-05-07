@@ -244,7 +244,9 @@ resource "azurerm_linux_web_app" "main_app_service" {
       node_version = "22-lts"
     }
     cors {
-      allowed_origins = ["http://localhost:3000", "http://localhost:3333", "https://localhost:3000", "https://localhost:3333", "https://white-moss-02cf3a71e.2.azurestaticapps.net"]
+      allowed_origins = concat(var.app_service_local_dev_origins, [
+        "https://${azurerm_static_web_app.web_portal.default_host_name}",
+      ])
     }
   }
 }
@@ -265,6 +267,26 @@ resource "azurerm_application_insights" "app_service_insights" {
   resource_group_name = azurerm_resource_group.rg.name
   workspace_id        = azurerm_log_analytics_workspace.app_service_insights_workspace.id
   sampling_percentage = var.app_service_sampling_percentage
+}
+resource "azurerm_application_insights_standard_web_test" "app_service_ping_test" {
+  name                    = "app-service-ping-test"
+  description             = "Ping test for the main Dancelife app service. Checks the GET login urls API."
+  resource_group_name     = azurerm_resource_group.rg.name
+  application_insights_id = azurerm_application_insights.app_service_insights.id
+  location                = azurerm_application_insights.app_service_insights.location
+  geo_locations           = [ "us-fl-mia-edge", "us-ca-sjc-azr" ]
+  frequency               = "300"
+  enabled                 = true
+  request {
+    url = "https://${azurerm_linux_web_app.main_app_service.default_hostname}${var.app_service_ping_test_path}"
+  }
+  validation_rules {
+    content {
+      content_match      = "status"
+      ignore_case        = true
+      pass_if_text_found = true
+    }
+  }
 }
 resource "azurerm_static_web_app" "web_portal" {
   location            = var.resource_group_region

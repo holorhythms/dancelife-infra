@@ -26,6 +26,21 @@ variable "app_service_auto_scale_enabled" {
     default     = false
     description = "Whether or not to enable auto-scaling for the App Service Plan. Only works with Premium plans."
 }
+variable "app_service_local_dev_origins" {
+    type        = list(string)
+    default     = [
+        "http://localhost:3000", 
+        "http://localhost:3333", 
+        "https://localhost:3000", 
+        "https://localhost:3333"
+    ]
+    description = "List of allowed CORS origins for local development. These will be added to the App Service CORS settings"
+}
+variable "app_service_ping_test_path" {
+    type        = string
+    default     = "/api/v1/auth/wos/login/urls"
+    description = "Path to use for ping tests in Application Insights availability tests."
+}
 variable "app_service_repo_branch" {
     type        = string
     default     = "master"
