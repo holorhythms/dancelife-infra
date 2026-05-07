@@ -67,6 +67,11 @@ variable "postgres_server_sku_name" {
     type        = string
     description = "SKU for the PostgreSQL Flexible Database server."
 }
+variable "postgres_config_auto_grow_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable auto-grow for the PostgreSQL server."
+}
 variable "postgres_config_backup_retention_days" {
     type        = number
     default     = 7
@@ -76,6 +81,11 @@ variable "postgres_config_geo_redundant_backup_enabled" {
     type        = bool
     default     = false
     description = "Whether or not geo-redundant backup is enabled for the PostgreSQL server."
+}
+variable "postgres_config_high_availability_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not high availability is enabled for the PostgreSQL server. Only works with certain SKUs."
 }
 variable "postgres_config_secure_transport" {
     type        = string

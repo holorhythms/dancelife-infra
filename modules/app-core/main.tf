@@ -15,11 +15,27 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
   version = "17"
   backup_retention_days = var.postgres_config_backup_retention_days
   geo_redundant_backup_enabled = var.postgres_config_geo_redundant_backup_enabled
+  auto_grow_enabled = var.postgres_config_auto_grow_enabled
+
+  # Only include high availability block if enabled for environment
+  dynamic "high_availability" {
+    for_each = var.postgres_config_high_availability_enabled ? [1] : []
+    
+    content {
+        mode = "ZoneRedundant"
+    }
+  }
 
   authentication {
     tenant_id = data.azurerm_client_config.current.tenant_id
     active_directory_auth_enabled = true
     password_auth_enabled = true
+  }
+
+  lifecycle {
+    ignore_changes = [ 
+      high_availability[0].standby_availability_zone
+    ]
   }
 }
 resource "azurerm_postgresql_flexible_server_active_directory_administrator" "main_app_db_admin_group" {
