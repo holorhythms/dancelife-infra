@@ -185,7 +185,63 @@ resource "azurerm_service_plan" "app_service_plan" {
   os_type                         = "Linux"
   resource_group_name             = azurerm_resource_group.rg.name
   sku_name                        = var.app_service_sku_name
-  premium_plan_auto_scale_enabled = var.app_service_auto_scale_enabled
+}
+resource "azurerm_monitor_autoscale_setting" "app_service_plan_autoscale" {
+  count               = var.app_service_autoscale_enabled ? 1 : 0
+  name                = "dancelife-plan-autoscale-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.resource_group_region
+  target_resource_id  = azurerm_service_plan.app_service_plan.id
+
+  profile {
+    name = "cpu-based"
+
+    capacity {
+      default = tostring(var.app_service_autoscale_default_instance_count)
+      minimum = tostring(var.app_service_autoscale_minimum_instance_count)
+      maximum = tostring(var.app_service_autoscale_maximum_instance_count)
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.app_service_plan.id
+        operator           = "GreaterThan"
+        statistic          = "Average"
+        threshold          = var.app_service_autoscale_scale_out_cpu_percentage
+        time_aggregation   = "Average"
+        time_grain         = "PT1M"
+        time_window        = var.app_service_autoscale_time_window
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = var.app_service_autoscale_scale_out_cooldown
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.app_service_plan.id
+        operator           = "LessThan"
+        statistic          = "Average"
+        threshold          = var.app_service_autoscale_scale_in_cpu_percentage
+        time_aggregation   = "Average"
+        time_grain         = "PT1M"
+        time_window        = var.app_service_autoscale_time_window
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = var.app_service_autoscale_scale_in_cooldown
+      }
+    }
+  }
 }
 resource "azurerm_app_service_source_control" "main_app_service_source_control" {
   app_id   = azurerm_linux_web_app.main_app_service.id
@@ -232,7 +288,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
   tags = {
-    "hidden-link: /app-insights-resource-id" = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${local.resource_group_name}/providers/microsoft.insights/components/${local.app_service_name}"
+    "hidden-link: /app-insights-resource-id" = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${local.resource_group_name}/providers/microsoft.insights/components/${local.app_service_insights_name}"
   }
   virtual_network_subnet_id = azurerm_subnet.subnet_app.id
   connection_string {
@@ -279,7 +335,7 @@ resource "azurerm_log_analytics_workspace" "app_service_insights_workspace" {
 resource "azurerm_application_insights" "app_service_insights" {
   application_type    = "web"
   location            = var.resource_group_region
-  name                = "${local.app_service_name}-insights"
+  name                = local.app_service_insights_name
   resource_group_name = azurerm_resource_group.rg.name
   workspace_id        = azurerm_log_analytics_workspace.app_service_insights_workspace.id
   sampling_percentage = var.app_service_sampling_percentage

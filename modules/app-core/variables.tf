@@ -21,10 +21,50 @@ variable "app_service_sku_name" {
     type        = string
     description = "SKU for the App Service Plan."
 }
-variable "app_service_auto_scale_enabled" {
+variable "app_service_autoscale_enabled" {
     type        = bool
     default     = false
     description = "Whether or not to enable auto-scaling for the App Service Plan. Only works with Premium plans."
+}
+variable "app_service_autoscale_minimum_instance_count" {
+    type        = number
+    default     = 2
+    description = "Minimum number of App Service Plan instances when autoscale is enabled."
+}
+variable "app_service_autoscale_default_instance_count" {
+    type        = number
+    default     = 2
+    description = "Default number of App Service Plan instances when autoscale is enabled."
+}
+variable "app_service_autoscale_maximum_instance_count" {
+    type        = number
+    default     = 4
+    description = "Maximum number of App Service Plan instances when autoscale is enabled."
+}
+variable "app_service_autoscale_scale_out_cpu_percentage" {
+    type        = number
+    default     = 70
+    description = "Scale out when average CPU percentage is above this value."
+}
+variable "app_service_autoscale_scale_in_cpu_percentage" {
+    type        = number
+    default     = 25
+    description = "Scale in when average CPU percentage is below this value."
+}
+variable "app_service_autoscale_scale_out_cooldown" {
+    type        = string
+    default     = "PT5M"
+    description = "Cooldown after a scale-out action."
+}
+variable "app_service_autoscale_scale_in_cooldown" {
+    type        = string
+    default     = "PT10M"
+    description = "Cooldown after a scale-in action."
+}
+variable "app_service_autoscale_time_window" {
+    type        = string
+    default     = "PT10M"
+    description = "Time window for evaluating autoscale metrics."
 }
 variable "app_service_local_dev_origins" {
     type        = list(string)

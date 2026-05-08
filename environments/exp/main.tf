@@ -5,15 +5,15 @@ module "app_core" {
 
     # App Service configuration
     app_service_sku_name = "P1v3"
-    app_service_auto_scale_enabled = true
+    app_service_autoscale_enabled = true // Use module defaults
     app_service_sampling_percentage = 100
 
     # PostgreSQL configuration
-    postgres_server_sku_name = "GP_Standard_D2s_v3"
-    postgres_config_auto_grow_enabled = true
-    postgres_config_backup_retention_days = 14
-    postgres_config_geo_redundant_backup_enabled = true
-    postgres_config_high_availability_enabled = true
+    postgres_server_sku_name = "B_Standard_B2s"
+    postgres_config_auto_grow_enabled = false
+    postgres_config_backup_retention_days = 7
+    postgres_config_geo_redundant_backup_enabled = false
+    postgres_config_high_availability_enabled = false
     postgres_config_secure_transport = "ON"
 
     # Storage account configuration
