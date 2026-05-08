@@ -284,8 +284,8 @@ resource "azurerm_application_insights" "app_service_insights" {
   workspace_id        = azurerm_log_analytics_workspace.app_service_insights_workspace.id
   sampling_percentage = var.app_service_sampling_percentage
 }
-resource "azurerm_application_insights_standard_web_test" "dancelife_app_service_ping_test" {
-  name                    = "app-service-ping-test"
+resource "azurerm_application_insights_standard_web_test" "app_service_ping_test" {
+  name                    = "dancelife-app-service-ping-test"
   description             = "Ping test for the main Dancelife app service. Checks the GET login urls API."
   resource_group_name     = azurerm_resource_group.rg.name
   application_insights_id = azurerm_application_insights.app_service_insights.id
