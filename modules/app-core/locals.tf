@@ -2,7 +2,7 @@
 locals {
     # Resource names
     app_service_name = "dancelife-app-service-${var.environment_name}"
-    app_service_insights_name = "dancelife-app-insights-${var.environment_name}"
+    app_service_insights_name = "dancelife-app-service-${var.environment_name}-insights"
     postgres_server_name = "dancelife-postgres-server-${var.environment_name}"
     resource_group_name = "dancelife-rg-${var.environment_name}"
     storage_account_name = "dancelifestorage${var.environment_name}"

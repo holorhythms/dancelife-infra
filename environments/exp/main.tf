@@ -4,8 +4,8 @@ module "app_core" {
     environment_name = var.environment_name
 
     # App Service configuration
-    app_service_sku_name = "P1v3"
-    app_service_autoscale_enabled = true // Use module defaults
+    app_service_sku_name = "B1"
+    app_service_autoscale_enabled = false // Use module defaults
     app_service_sampling_percentage = 100
 
     # PostgreSQL configuration
