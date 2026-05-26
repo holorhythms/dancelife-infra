@@ -3,6 +3,11 @@ module "app_core" {
 
     environment_name = var.environment_name
 
+    # Alerts configuration
+    app_service_failed_requests_alert_enabled = true
+    critical_alerts_action_group_email_receivers = var.critical_alerts_action_group_email_receivers
+    critical_alerts_action_group_sms_receivers = var.critical_alerts_action_group_sms_receivers
+
     # App Service configuration
     app_service_sku_name = "B1"
     app_service_autoscale_enabled = false // Use module defaults
