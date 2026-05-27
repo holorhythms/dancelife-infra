@@ -367,6 +367,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_ping_test
   location             = var.resource_group_region
   scopes               = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
   severity             = var.app_service_ping_test_consecutive_failures_alert_severity
+  auto_mitigation_enabled = true
   evaluation_frequency = var.ping_test_evaluation_frequency
   window_duration      = var.ping_test_window_duration
   description          = "Alert when the app service ping test fails 2 runs in a row."
@@ -424,15 +425,16 @@ resource "azurerm_monitor_action_group" "critical_alerts" {
   }
 }
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_failed_request_percentage" {
-  count               = var.app_service_failed_requests_alert_enabled ? 1 : 0
-  name                = "dancelife-app-service-failed-requests-percentage-${var.environment_name}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = var.resource_group_region
-  scopes              = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
-  severity            = var.app_service_failed_requests_alert_severity
-  evaluation_frequency = var.app_service_failed_requests_alert_evaluation_frequency
-  window_duration      = var.app_service_failed_requests_alert_window_duration
-  description          = "Alert when App Service failed request percentage exceeds threshold."
+  count                   = var.app_service_failed_requests_alert_enabled ? 1 : 0
+  name                    = "dancelife-app-service-failed-requests-percentage-${var.environment_name}"
+  resource_group_name     = azurerm_resource_group.rg.name
+  location                = var.resource_group_region
+  scopes                  = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
+  severity                = var.app_service_failed_requests_alert_severity
+  evaluation_frequency    = var.app_service_failed_requests_alert_evaluation_frequency
+  window_duration         = var.app_service_failed_requests_alert_window_duration
+  auto_mitigation_enabled = true
+  description             = "Alert when App Service failed request percentage exceeds threshold."
 
   criteria {
     query = <<-KQL
