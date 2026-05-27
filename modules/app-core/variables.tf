@@ -123,33 +123,6 @@ variable "app_service_sampling_percentage" {
     description = "Percentage of requests to sample for Application Insights."
 }
 
-// App Service alerts config
-variable "app_service_failed_requests_alert_enabled" {
-    type        = bool
-    default     = false
-    description = "Whether or not to enable the failed-request-percentage alert for App Service."
-}
-variable "app_service_failed_requests_alert_threshold_percentage" {
-    type        = number
-    default     = 20
-    description = "Failed request percentage threshold that triggers the App Service alert."
-}
-variable "app_service_failed_requests_alert_evaluation_frequency" {
-    type        = string
-    default     = "PT15M"
-    description = "How often to evaluate the failed request percentage alert."
-}
-variable "app_service_failed_requests_alert_window_duration" {
-    type        = string
-    default     = "PT30M"
-    description = "Rolling time window used to calculate failed request percentage."
-}
-variable "app_service_failed_requests_alert_severity" {
-    type        = number
-    default     = 2
-    description = "Severity for the App Service failed request percentage alert."
-}
-
 // PostgreSQL config
 variable "postgres_database_name" {
     type        = string
@@ -228,4 +201,51 @@ variable "web_portal_sku_tier" {
     type        = string
     default     = "Standard"
     description = "SKU tier for the web portal static web app."
+}
+
+// Alerts config
+variable "ping_test_evaluation_frequency" {
+    type        = string
+    default     = "PT5M"
+    description = "How often to evaluate ping test alerts."
+}
+variable "ping_test_window_duration" {
+    type        = string
+    default     = "PT15M"
+    description = "Rolling time window used to evaluate ping test alerts."
+}
+variable "app_service_ping_test_consecutive_failures_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the availability alert for consecutive failures of the App Service ping test."
+}
+variable "app_service_ping_test_consecutive_failures_alert_severity" {
+    type        = number
+    default     = 2
+    description = "Severity for the App Service ping test consecutive failures alert."
+}
+variable "app_service_failed_requests_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the failed-request-percentage alert for App Service."
+}
+variable "app_service_failed_requests_alert_threshold_percentage" {
+    type        = number
+    default     = 20
+    description = "Failed request percentage threshold that triggers the App Service alert."
+}
+variable "app_service_failed_requests_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT15M"
+    description = "How often to evaluate the failed request percentage alert."
+}
+variable "app_service_failed_requests_alert_window_duration" {
+    type        = string
+    default     = "PT30M"
+    description = "Rolling time window used to calculate failed request percentage."
+}
+variable "app_service_failed_requests_alert_severity" {
+    type        = number
+    default     = 2
+    description = "Severity for the App Service failed request percentage alert."
 }

@@ -360,6 +360,44 @@ resource "azurerm_application_insights_standard_web_test" "app_service_ping_test
     }
   }
 }
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_ping_test_consecutive_failures" {
+count                  = var.app_service_ping_test_consecutive_failures_alert_enabled ? 1 : 0
+  name                 = "dancelife-app-service-ping-test-consecutive-failures-${var.environment_name}"
+  resource_group_name  = azurerm_resource_group.rg.name
+  location             = var.resource_group_region
+  scopes               = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
+  severity             = var.app_service_ping_test_consecutive_failures_alert_severity
+  evaluation_frequency = var.ping_test_evaluation_frequency
+  window_duration      = var.ping_test_window_duration
+  description          = "Alert when the app service ping test fails 2 runs in a row."
+
+  criteria {
+    query = <<-KQL
+      let testName = "${azurerm_application_insights_standard_web_test.app_service_ping_test.name}";
+      AppAvailabilityResults
+      | where Name == testName
+      | summarize RunSuccess = min(tobool(Success)) by bin(TimeGenerated, 5m)
+      | top 2 by TimeGenerated desc
+      | summarize ConsecutiveFailures = countif(RunSuccess == false), RunsConsidered = count()
+      | where RunsConsidered == 2 and ConsecutiveFailures == 2
+      | project ConsecutiveFailures
+    KQL
+
+    time_aggregation_method = "Maximum"
+    metric_measure_column   = "ConsecutiveFailures"
+    operator                = "GreaterThanOrEqual"
+    threshold               = 2
+
+    failing_periods {
+      number_of_evaluation_periods             = 1
+      minimum_failing_periods_to_trigger_alert = 1
+    }
+  }
+
+  action {
+    action_groups = [azurerm_monitor_action_group.critical_alerts.id]
+  }
+}
 resource "azurerm_monitor_action_group" "critical_alerts" {
   name                = "critical-alerts-${var.environment_name}"
   resource_group_name = azurerm_resource_group.rg.name
