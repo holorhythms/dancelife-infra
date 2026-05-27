@@ -361,7 +361,7 @@ resource "azurerm_application_insights_standard_web_test" "app_service_ping_test
   }
 }
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_ping_test_consecutive_failures" {
-count                  = var.app_service_ping_test_consecutive_failures_alert_enabled ? 1 : 0
+  count                  = var.app_service_ping_test_consecutive_failures_alert_enabled ? 1 : 0
   name                 = "dancelife-app-service-ping-test-consecutive-failures-${var.environment_name}"
   resource_group_name  = azurerm_resource_group.rg.name
   location             = var.resource_group_region
