@@ -424,6 +424,29 @@ resource "azurerm_monitor_action_group" "critical_alerts" {
     }
   }
 }
+resource "azurerm_monitor_metric_alert" "main_app_service_cpu_high" {
+  count               = var.app_service_cpu_alert_enabled ? 1 : 0
+  name                = "dancelife-main-app-service-cpu-high-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  scopes              = [azurerm_service_plan.app_service_plan.id]
+  description         = "Alert when the main App Service CPU percentage is above the configured threshold."
+  severity            = var.app_service_cpu_alert_severity
+  frequency           = var.app_service_cpu_alert_evaluation_frequency
+  window_size         = var.app_service_cpu_alert_window_size
+  auto_mitigate       = true
+
+  criteria {
+    metric_namespace = "Microsoft.Web/serverfarms"
+    metric_name      = "CpuPercentage"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.app_service_cpu_alert_threshold_percentage
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.critical_alerts.id
+  }
+}
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_failed_request_percentage" {
   count                   = var.app_service_failed_requests_alert_enabled ? 1 : 0
   name                    = "dancelife-app-service-failed-requests-percentage-${var.environment_name}"

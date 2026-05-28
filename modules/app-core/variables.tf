@@ -249,3 +249,28 @@ variable "app_service_failed_requests_alert_severity" {
     default     = 2
     description = "Severity for the App Service failed request percentage alert."
 }
+variable "app_service_cpu_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the CPU percentage alert for the main App Service."
+}
+variable "app_service_cpu_alert_threshold_percentage" {
+    type        = number
+    default     = 60
+    description = "CPU percentage threshold that triggers the main App Service alert."
+}
+variable "app_service_cpu_alert_window_size" {
+    type        = string
+    default     = "PT15M"
+    description = "Rolling time window used to evaluate the main App Service CPU alert."
+}
+variable "app_service_cpu_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT15M"
+    description = "How often to evaluate the main App Service CPU alert."
+}
+variable "app_service_cpu_alert_severity" {
+    type        = number
+    default     = 3
+    description = "Severity for the main App Service CPU alert."
+}
