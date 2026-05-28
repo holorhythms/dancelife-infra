@@ -360,6 +360,129 @@ resource "azurerm_application_insights_standard_web_test" "app_service_ping_test
     }
   }
 }
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_ping_test_consecutive_failures" {
+  count                  = var.app_service_ping_test_consecutive_failures_alert_enabled ? 1 : 0
+  name                 = "dancelife-app-service-ping-test-consecutive-failures-${var.environment_name}"
+  resource_group_name  = azurerm_resource_group.rg.name
+  location             = var.resource_group_region
+  scopes               = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
+  severity             = var.app_service_ping_test_consecutive_failures_alert_severity
+  auto_mitigation_enabled = true
+  evaluation_frequency = var.ping_test_evaluation_frequency
+  window_duration      = var.ping_test_window_duration
+  description          = "Alert when the app service ping test fails 2 runs in a row."
+
+  criteria {
+    query = <<-KQL
+      let testName = "${azurerm_application_insights_standard_web_test.app_service_ping_test.name}";
+      AppAvailabilityResults
+      | where Name == testName
+      | summarize RunSuccess = min(tobool(Success)) by bin(TimeGenerated, 5m)
+      | top 2 by TimeGenerated desc
+      | summarize ConsecutiveFailures = countif(RunSuccess == false), RunsConsidered = count()
+      | where RunsConsidered == 2 and ConsecutiveFailures == 2
+      | project ConsecutiveFailures
+    KQL
+
+    time_aggregation_method = "Maximum"
+    metric_measure_column   = "ConsecutiveFailures"
+    operator                = "GreaterThanOrEqual"
+    threshold               = 2
+
+    failing_periods {
+      number_of_evaluation_periods             = 1
+      minimum_failing_periods_to_trigger_alert = 1
+    }
+  }
+
+  action {
+    action_groups = [azurerm_monitor_action_group.critical_alerts.id]
+  }
+}
+resource "azurerm_monitor_action_group" "critical_alerts" {
+  name                = "critical-alerts-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  short_name          = "crit-alerts"
+
+  dynamic "email_receiver" {
+    for_each = var.critical_alerts_action_group_email_receivers
+
+    content {
+      name                    = email_receiver.value.name
+      email_address           = email_receiver.value.email_address
+      use_common_alert_schema = email_receiver.value.use_common_alert_schema
+    }
+  }
+
+  dynamic "sms_receiver" {
+    for_each = var.critical_alerts_action_group_sms_receivers
+
+    content {
+      name         = sms_receiver.value.name
+      country_code = sms_receiver.value.country_code
+      phone_number = sms_receiver.value.phone_number
+    }
+  }
+}
+resource "azurerm_monitor_metric_alert" "main_app_service_cpu_high" {
+  count               = var.app_service_cpu_alert_enabled ? 1 : 0
+  name                = "dancelife-main-app-service-cpu-high-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  scopes              = [azurerm_service_plan.app_service_plan.id]
+  description         = "Alert when the main App Service CPU percentage is above the configured threshold."
+  severity            = var.app_service_cpu_alert_severity
+  frequency           = var.app_service_cpu_alert_evaluation_frequency
+  window_size         = var.app_service_cpu_alert_window_size
+  auto_mitigate       = true
+
+  criteria {
+    metric_namespace = "Microsoft.Web/serverfarms"
+    metric_name      = "CpuPercentage"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.app_service_cpu_alert_threshold_percentage
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.critical_alerts.id
+  }
+}
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_failed_request_percentage" {
+  count                   = var.app_service_failed_requests_alert_enabled ? 1 : 0
+  name                    = "dancelife-app-service-failed-requests-percentage-${var.environment_name}"
+  resource_group_name     = azurerm_resource_group.rg.name
+  location                = var.resource_group_region
+  scopes                  = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
+  severity                = var.app_service_failed_requests_alert_severity
+  evaluation_frequency    = var.app_service_failed_requests_alert_evaluation_frequency
+  window_duration         = var.app_service_failed_requests_alert_window_duration
+  auto_mitigation_enabled = true
+  description             = "Alert when App Service failed request percentage exceeds threshold."
+
+  criteria {
+    query = <<-KQL
+      AppRequests
+      | summarize TotalRequests = count(), FailedRequests = countif(Success == false)
+      | extend FailedRequestPercentage = iff(TotalRequests == 0, 0.0, todouble(FailedRequests) * 100.0 / todouble(TotalRequests))
+      | where FailedRequests >= 5
+      | project FailedRequestPercentage
+    KQL
+
+    time_aggregation_method = "Maximum"
+    metric_measure_column   = "FailedRequestPercentage"
+    operator                = "GreaterThan"
+    threshold               = var.app_service_failed_requests_alert_threshold_percentage
+
+    failing_periods {
+      number_of_evaluation_periods             = 1
+      minimum_failing_periods_to_trigger_alert = 1
+    }
+  }
+
+  action {
+      action_groups = [ azurerm_monitor_action_group.critical_alerts.id ]
+  }
+}
 resource "azurerm_static_web_app" "web_portal" {
   location            = var.resource_group_region
   name                = local.web_portal_name

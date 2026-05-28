@@ -16,6 +16,27 @@ variable "resource_group_region" {
     description = "Location of the resource group."
 }
 
+// General alerts config
+variable "critical_alerts_action_group_email_receivers" {
+    type = list(object({
+        name                    = string
+        email_address           = string
+        use_common_alert_schema = optional(bool, true)
+    }))
+    default     = []
+    description = "Email receivers for the critical alerts Action Group."
+}
+variable "critical_alerts_action_group_sms_receivers" {
+    type = list(object({
+        name         = string
+        country_code = string
+        phone_number = string
+    }))
+    default     = []
+    description = "SMS receivers for the critical alerts Action Group."
+}
+
+
 // App Service config
 variable "app_service_sku_name" {
     type        = string
@@ -180,4 +201,76 @@ variable "web_portal_sku_tier" {
     type        = string
     default     = "Standard"
     description = "SKU tier for the web portal static web app."
+}
+
+// Alerts config
+variable "ping_test_evaluation_frequency" {
+    type        = string
+    default     = "PT5M"
+    description = "How often to evaluate ping test alerts."
+}
+variable "ping_test_window_duration" {
+    type        = string
+    default     = "PT15M"
+    description = "Rolling time window used to evaluate ping test alerts."
+}
+variable "app_service_ping_test_consecutive_failures_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the availability alert for consecutive failures of the App Service ping test."
+}
+variable "app_service_ping_test_consecutive_failures_alert_severity" {
+    type        = number
+    default     = 2
+    description = "Severity for the App Service ping test consecutive failures alert."
+}
+variable "app_service_failed_requests_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the failed-request-percentage alert for App Service."
+}
+variable "app_service_failed_requests_alert_threshold_percentage" {
+    type        = number
+    default     = 20
+    description = "Failed request percentage threshold that triggers the App Service alert."
+}
+variable "app_service_failed_requests_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT15M"
+    description = "How often to evaluate the failed request percentage alert."
+}
+variable "app_service_failed_requests_alert_window_duration" {
+    type        = string
+    default     = "PT30M"
+    description = "Rolling time window used to calculate failed request percentage."
+}
+variable "app_service_failed_requests_alert_severity" {
+    type        = number
+    default     = 2
+    description = "Severity for the App Service failed request percentage alert."
+}
+variable "app_service_cpu_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the CPU percentage alert for the main App Service."
+}
+variable "app_service_cpu_alert_threshold_percentage" {
+    type        = number
+    default     = 60
+    description = "CPU percentage threshold that triggers the main App Service alert."
+}
+variable "app_service_cpu_alert_window_size" {
+    type        = string
+    default     = "PT15M"
+    description = "Rolling time window used to evaluate the main App Service CPU alert."
+}
+variable "app_service_cpu_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT15M"
+    description = "How often to evaluate the main App Service CPU alert."
+}
+variable "app_service_cpu_alert_severity" {
+    type        = number
+    default     = 3
+    description = "Severity for the main App Service CPU alert."
 }
