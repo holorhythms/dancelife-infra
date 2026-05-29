@@ -59,6 +59,11 @@ resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_extensi
   server_id = azurerm_postgresql_flexible_server.main_app_db.id
   value     = "POSTGIS,UUID-OSSP"
 }
+resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_max_connections" {
+  name      = "max_connections"
+  server_id = azurerm_postgresql_flexible_server.main_app_db.id
+  value     = var.postgres_config_max_connections
+}
 resource "azurerm_postgresql_flexible_server_configuration" "main_app_db_gdal" {
   name      = "postgis.gdal_enabled_drivers"
   server_id = azurerm_postgresql_flexible_server.main_app_db.id
@@ -441,6 +446,75 @@ resource "azurerm_monitor_metric_alert" "main_app_service_cpu_high" {
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = var.app_service_cpu_alert_threshold_percentage
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.critical_alerts.id
+  }
+}
+resource "azurerm_monitor_metric_alert" "main_app_db_storage_percent_high" {
+  count               = var.main_app_db_storage_percent_alert_enabled ? 1 : 0
+  name                = "dancelife-main-app-db-storage-percent-high-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  scopes              = [azurerm_postgresql_flexible_server.main_app_db.id]
+  description         = "Alert when the main PostgreSQL server storage percentage is above the configured threshold."
+  severity            = var.main_app_db_storage_percent_alert_severity
+  frequency           = var.main_app_db_storage_percent_alert_evaluation_frequency
+  window_size         = var.main_app_db_storage_percent_alert_window_size
+  auto_mitigate       = true
+
+  criteria {
+    metric_namespace = "Microsoft.DBforPostgreSQL/flexibleServers"
+    metric_name      = "storage_percent"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.main_app_db_storage_percent_alert_threshold_percentage
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.critical_alerts.id
+  }
+}
+resource "azurerm_monitor_metric_alert" "main_app_db_cpu_high" {
+  count               = var.main_app_db_cpu_alert_enabled ? 1 : 0
+  name                = "dancelife-main-app-db-cpu-high-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  scopes              = [azurerm_postgresql_flexible_server.main_app_db.id]
+  description         = "Alert when the main PostgreSQL server CPU percentage is above the configured threshold."
+  severity            = var.main_app_db_cpu_alert_severity
+  frequency           = var.main_app_db_cpu_alert_evaluation_frequency
+  window_size         = var.main_app_db_cpu_alert_window_size
+  auto_mitigate       = true
+
+  criteria {
+    metric_namespace = "Microsoft.DBforPostgreSQL/flexibleServers"
+    metric_name      = "cpu_percent"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.main_app_db_cpu_alert_threshold_percentage
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.critical_alerts.id
+  }
+}
+resource "azurerm_monitor_metric_alert" "main_app_db_active_connections_high" {
+  count               = var.main_app_db_active_connections_alert_enabled ? 1 : 0
+  name                = "dancelife-main-app-db-active-connections-high-${var.environment_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  scopes              = [azurerm_postgresql_flexible_server.main_app_db.id]
+  description         = "Alert when main PostgreSQL active connections exceeds the configured percentage of max connections."
+  severity            = var.main_app_db_active_connections_alert_severity
+  frequency           = var.main_app_db_active_connections_alert_evaluation_frequency
+  window_size         = var.main_app_db_active_connections_alert_window_size
+  auto_mitigate       = true
+
+  criteria {
+    metric_namespace = "Microsoft.DBforPostgreSQL/flexibleServers"
+    metric_name      = "active_connections"
+    aggregation      = "Average"
+    operator         = "GreaterThanOrEqual"
+    threshold        = ceil((tonumber(var.postgres_config_max_connections) * var.main_app_db_active_connections_alert_threshold_percentage) / 100)
   }
 
   action {

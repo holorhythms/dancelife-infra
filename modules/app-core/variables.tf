@@ -153,6 +153,11 @@ variable "postgres_config_high_availability_enabled" {
     default     = false
     description = "Whether or not high availability is enabled for the PostgreSQL server. Only works with certain SKUs."
 }
+variable "postgres_config_max_connections" {
+    type        = number
+    default     = "859"
+    description = "Value for the max_connections configuration on the PostgreSQL server."
+}
 variable "postgres_config_secure_transport" {
     type        = string
     default     = "OFF"
@@ -273,4 +278,79 @@ variable "app_service_cpu_alert_severity" {
     type        = number
     default     = 3
     description = "Severity for the main App Service CPU alert."
+}
+variable "main_app_db_storage_percent_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the storage percentage alert for the main PostgreSQL server."
+}
+variable "main_app_db_storage_percent_alert_threshold_percentage" {
+    type        = number
+    default     = 85
+    description = "Storage percentage threshold that triggers the main PostgreSQL alert."
+}
+variable "main_app_db_storage_percent_alert_window_size" {
+    type        = string
+    default     = "PT15M"
+    description = "Rolling time window used to evaluate the main PostgreSQL storage percentage alert."
+}
+variable "main_app_db_storage_percent_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT15M"
+    description = "How often to evaluate the main PostgreSQL storage percentage alert."
+}
+variable "main_app_db_storage_percent_alert_severity" {
+    type        = number
+    default     = 3
+    description = "Severity for the main PostgreSQL storage percentage alert."
+}
+variable "main_app_db_cpu_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the CPU alert for the main PostgreSQL server."
+}
+variable "main_app_db_cpu_alert_threshold_percentage" {
+    type        = number
+    default     = 90
+    description = "CPU percentage threshold that triggers the main PostgreSQL alert."
+}
+variable "main_app_db_cpu_alert_window_size" {
+    type        = string
+    default     = "PT15M"
+    description = "Rolling time window used to evaluate the main PostgreSQL CPU alert."
+}
+variable "main_app_db_cpu_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT5M"
+    description = "How often to evaluate the main PostgreSQL CPU alert."
+}
+variable "main_app_db_cpu_alert_severity" {
+    type        = number
+    default     = 3
+    description = "Severity for the main PostgreSQL CPU alert."
+}
+variable "main_app_db_active_connections_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the active-connections alert for the main PostgreSQL server."
+}
+variable "main_app_db_active_connections_alert_threshold_percentage" {
+    type        = number
+    default     = 80
+    description = "Active-connections percentage threshold that triggers the main PostgreSQL alert."
+}
+variable "main_app_db_active_connections_alert_evaluation_frequency" {
+    type        = string
+    default     = "PT5M"
+    description = "How often to evaluate the main PostgreSQL active-connections alert."
+}
+variable "main_app_db_active_connections_alert_window_size" {
+    type        = string
+    default     = "PT30M"
+    description = "Rolling time window used to evaluate the main PostgreSQL active-connections alert."
+}
+variable "main_app_db_active_connections_alert_severity" {
+    type        = number
+    default     = 3
+    description = "Severity for the main PostgreSQL active-connections alert."
 }

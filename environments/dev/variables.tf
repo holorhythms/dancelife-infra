@@ -28,3 +28,14 @@ variable "critical_alerts_action_group_sms_receivers" {
     default     = []
     description = "SMS receivers for the critical alerts Action Group."
 }
+
+variable "main_app_db_storage_percent_alert_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the storage percentage alert for the main PostgreSQL server."
+}
+variable "main_app_db_storage_percent_alert_threshold_percentage" {
+    type        = number
+    default     = 85
+    description = "Storage percentage threshold that triggers the main PostgreSQL alert."
+}
