@@ -7,6 +7,10 @@ module "app_core" {
     app_service_cpu_alert_enabled = true
     app_service_failed_requests_alert_enabled = true
     app_service_ping_test_consecutive_failures_alert_enabled = true
+    main_app_db_active_connections_alert_enabled = true
+    main_app_db_cpu_alert_enabled = true
+    main_app_db_storage_percent_alert_enabled = true
+
     critical_alerts_action_group_email_receivers = var.critical_alerts_action_group_email_receivers
     critical_alerts_action_group_sms_receivers = var.critical_alerts_action_group_sms_receivers
 
