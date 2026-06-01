@@ -327,6 +327,24 @@ resource "azurerm_linux_web_app" "main_app_service" {
     }
   }
 }
+resource "azurerm_app_service_custom_hostname_binding" "main_app_service_hostname_binding" {
+  hostname            = var.app_service_hostname
+  app_service_name    = azurerm_linux_web_app.main_app_service.name
+  resource_group_name = azurerm_linux_web_app.main_app_service.resource_group_name
+
+  # Lifecycle hook helps prevent race conditions during certificate binding
+  lifecycle {
+    ignore_changes = [ssl_state, thumbprint]
+  }
+}
+resource "azurerm_app_service_managed_certificate" "main_app_service_certificate" {
+  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.main_app_service_hostname_binding.id
+}
+resource "azurerm_app_service_certificate_binding" "ssl_binding" {
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.main_app_service_hostname_binding.id
+  certificate_id      = azurerm_app_service_managed_certificate.main_app_service_certificate.id
+  ssl_state           = "SniEnabled"
+}
 resource "azurerm_role_assignment" "app_service_keyvault_assignment" {
   scope                = data.azurerm_key_vault.dancelife_vault.id
   role_definition_name = "Key Vault Secrets User"

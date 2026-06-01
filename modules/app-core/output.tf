@@ -7,6 +7,13 @@ output "app_service_id" {
 output "app_service_name" {
     value = azurerm_linux_web_app.main_app_service.name
 }
+output "app_service_custom_hostname" {
+    value = azurerm_app_service_custom_hostname_binding.main_app_service_hostname_binding.hostname
+}
+output "app_service_domain_verification_id" {
+    value = azurerm_linux_web_app.main_app_service.custom_domain_verification_id
+    sensitive = true
+}
 output "azure_storage_account_id" {
     value = azurerm_storage_account.main_storage.id
 }

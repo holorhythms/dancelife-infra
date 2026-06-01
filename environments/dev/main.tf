@@ -16,6 +16,7 @@ module "app_core" {
 
     # App Service configuration
     app_service_sku_name = "B1"
+    app_service_hostname = "api-${var.environment_name}.dancelife247.com"
     app_service_autoscale_enabled = false
     app_service_sampling_percentage = 100
 

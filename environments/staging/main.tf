@@ -16,6 +16,7 @@ module "app_core" {
 
     # App Service configuration
     app_service_sku_name = "P1v3"
+    app_service_hostname = "api-${var.environment_name}.dancelife247.com"
     app_service_autoscale_enabled = true // use module defaults
     app_service_log_level = "info"
     app_service_sampling_percentage = 100
