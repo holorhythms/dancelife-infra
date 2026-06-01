@@ -10,6 +10,13 @@ output "app_service_id" {
 output "app_service_name" {
     value = module.app_core.app_service_name
 }
+output "app_service_custom_hostname" {
+    value = module.app_core.app_service_custom_hostname
+}
+output "app_service_domain_verification_id" {
+    value = module.app_core.app_service_domain_verification_id
+    sensitive = true
+}
 output "azure_storage_account_id" {
     value = module.app_core.azure_storage_account_id
 }

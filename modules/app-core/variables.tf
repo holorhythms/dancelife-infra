@@ -42,6 +42,10 @@ variable "app_service_sku_name" {
     type        = string
     description = "SKU for the App Service Plan."
 }
+variable "app_service_hostname" {
+    type        = string
+    description = "Hostname for the App Service. This will be used to construct the default URL for the app."
+}
 variable "app_service_autoscale_enabled" {
     type        = bool
     default     = false
