@@ -64,7 +64,7 @@ variable "app_service_autoscale_maximum_instance_count" {
 }
 variable "app_service_autoscale_scale_out_cpu_percentage" {
     type        = number
-    default     = 70
+    default     = 75
     description = "Scale out when average CPU percentage is above this value."
 }
 variable "app_service_autoscale_scale_in_cpu_percentage" {
@@ -261,7 +261,7 @@ variable "app_service_cpu_alert_enabled" {
 }
 variable "app_service_cpu_alert_threshold_percentage" {
     type        = number
-    default     = 60
+    default     = 68
     description = "CPU percentage threshold that triggers the main App Service alert."
 }
 variable "app_service_cpu_alert_window_size" {
