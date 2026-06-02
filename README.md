@@ -4,7 +4,7 @@
 * Add CNAME records for each of the environments being used for their unique subdomain
   * i.e. {"api-dev", "dancelife-app-service-dev.azurewebsites.net "}
 * Add TXT records for each subdomain to supply the domain verification id
-  * i.e. {"asuid.api-dev", "1E2G79794B03839D3EF10E626B75781BD997729FKDLSLA699804A60010675232"}
+  * i.e. {"asuid.api-dev", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
 
 ### Modify generated Github actions workflow files
 * This is only necessary if the corresponding resources are newly created (i.e. via a new environment stack being created)
