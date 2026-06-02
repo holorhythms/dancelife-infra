@@ -355,6 +355,23 @@ resource "azurerm_log_analytics_workspace" "app_service_insights_workspace" {
   name                = "${local.app_service_name}-law"
   resource_group_name = azurerm_resource_group.rg.name
 }
+resource "azurerm_monitor_diagnostic_setting" "main_app_service_diagnostics" {
+  name                       = "${local.app_service_name}-diagnostics"
+  target_resource_id         = azurerm_linux_web_app.main_app_service.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.app_service_insights_workspace.id
+
+  enabled_log {
+    category = "AppServiceHTTPLogs"
+  }
+
+  enabled_log {
+    category = "AppServiceAppLogs"
+  }
+
+  enabled_log {
+    category = "AppServiceConsoleLogs"
+  }
+}
 resource "azurerm_application_insights" "app_service_insights" {
   application_type    = "web"
   location            = var.resource_group_region
