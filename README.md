@@ -21,6 +21,7 @@
     LOG_LEVEL: info
     LOG_LEVEL_CLI: info
     APP_KEY: testtesttesttest
+    HOST_ENV: dev
     NODE_ENV: development
     SESSION_DRIVER: cookie
     DB_HOST: 127.0.0.1
