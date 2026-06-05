@@ -254,6 +254,9 @@ resource "azurerm_app_service_source_control" "main_app_service_source_control" 
   branch   = var.app_service_repo_branch
 
   github_action_configuration {
+
+    generate_workflow_file = var.app_service_github_action_generate_workflow_file_enabled
+
     code_configuration {
       runtime_stack = "node"
       runtime_version = "22"
@@ -327,6 +330,14 @@ resource "azurerm_linux_web_app" "main_app_service" {
       ])
     }
   }
+}
+resource "azurerm_linux_web_app_slot" "main_app_service_staging_slot" {
+  name           = "staging"
+  app_service_id = azurerm_linux_web_app.main_app_service.id
+
+  app_settings = azurerm_linux_web_app.main_app_service.app_settings
+
+  site_config {}
 }
 resource "azurerm_app_service_custom_hostname_binding" "main_app_service_hostname_binding" {
   hostname            = var.app_service_hostname

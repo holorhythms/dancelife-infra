@@ -91,6 +91,11 @@ variable "app_service_autoscale_time_window" {
     default     = "PT10M"
     description = "Time window for evaluating autoscale metrics."
 }
+variable "app_service_github_action_generate_workflow_file_enabled" {
+    type        = bool
+    default     = true
+    description = "Whether or not to generate the GitHub Actions workflow file for the App Service deployment."
+}
 variable "app_service_local_dev_origins" {
     type        = list(string)
     default     = [
