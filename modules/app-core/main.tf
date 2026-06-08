@@ -451,6 +451,43 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_ping_test
     action_groups = [azurerm_monitor_action_group.critical_alerts.id]
   }
 }
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_failed_request_percentage" {
+  count                   = var.app_service_failed_requests_alert_enabled ? 1 : 0
+  name                    = "dancelife-app-service-failed-requests-percentage-${var.environment_name}"
+  resource_group_name     = azurerm_resource_group.rg.name
+  location                = var.resource_group_region
+  scopes                  = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
+  severity                = var.app_service_failed_requests_alert_severity
+  evaluation_frequency    = var.app_service_failed_requests_alert_evaluation_frequency
+  window_duration         = var.app_service_failed_requests_alert_window_duration
+  auto_mitigation_enabled = true
+  description             = "Alert when App Service failed request percentage exceeds threshold."
+
+  criteria {
+    query = <<-KQL
+      AppRequests
+      | where tostring(ResultCode) != "404"
+      | summarize TotalRequests = count(), FailedRequests = countif(Success == false)
+      | extend FailedRequestPercentage = iff(TotalRequests == 0, 0.0, todouble(FailedRequests) * 100.0 / todouble(TotalRequests))
+      | where FailedRequests >= 5
+      | project FailedRequestPercentage
+    KQL
+
+    time_aggregation_method = "Maximum"
+    metric_measure_column   = "FailedRequestPercentage"
+    operator                = "GreaterThan"
+    threshold               = var.app_service_failed_requests_alert_threshold_percentage
+
+    failing_periods {
+      number_of_evaluation_periods             = 1
+      minimum_failing_periods_to_trigger_alert = 1
+    }
+  }
+
+  action {
+      action_groups = [ azurerm_monitor_action_group.critical_alerts.id ]
+  }
+}
 resource "azurerm_monitor_action_group" "critical_alerts" {
   name                = "critical-alerts-${var.environment_name}"
   resource_group_name = azurerm_resource_group.rg.name
@@ -566,42 +603,6 @@ resource "azurerm_monitor_metric_alert" "main_app_db_active_connections_high" {
 
   action {
     action_group_id = azurerm_monitor_action_group.critical_alerts.id
-  }
-}
-resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_failed_request_percentage" {
-  count                   = var.app_service_failed_requests_alert_enabled ? 1 : 0
-  name                    = "dancelife-app-service-failed-requests-percentage-${var.environment_name}"
-  resource_group_name     = azurerm_resource_group.rg.name
-  location                = var.resource_group_region
-  scopes                  = [azurerm_log_analytics_workspace.app_service_insights_workspace.id]
-  severity                = var.app_service_failed_requests_alert_severity
-  evaluation_frequency    = var.app_service_failed_requests_alert_evaluation_frequency
-  window_duration         = var.app_service_failed_requests_alert_window_duration
-  auto_mitigation_enabled = true
-  description             = "Alert when App Service failed request percentage exceeds threshold."
-
-  criteria {
-    query = <<-KQL
-      AppRequests
-      | summarize TotalRequests = count(), FailedRequests = countif(Success == false)
-      | extend FailedRequestPercentage = iff(TotalRequests == 0, 0.0, todouble(FailedRequests) * 100.0 / todouble(TotalRequests))
-      | where FailedRequests >= 5
-      | project FailedRequestPercentage
-    KQL
-
-    time_aggregation_method = "Maximum"
-    metric_measure_column   = "FailedRequestPercentage"
-    operator                = "GreaterThan"
-    threshold               = var.app_service_failed_requests_alert_threshold_percentage
-
-    failing_periods {
-      number_of_evaluation_periods             = 1
-      minimum_failing_periods_to_trigger_alert = 1
-    }
-  }
-
-  action {
-      action_groups = [ azurerm_monitor_action_group.critical_alerts.id ]
   }
 }
 resource "azurerm_static_web_app" "web_portal" {
