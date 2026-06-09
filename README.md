@@ -20,26 +20,30 @@
     ```
     # Default env to pass test run during deployment
     env:
-    TZ: UTC
-    PORT: 80
-    HOST: localhost
-    LOG_LEVEL: info
-    LOG_LEVEL_CLI: info
-    APP_KEY: testtesttesttest
-    HOST_ENV: dev
-    NODE_ENV: development
-    SESSION_DRIVER: cookie
-    DB_HOST: 127.0.0.1
-    DB_PORT: 5432
-    DB_USER: root
-    DB_PASSWORD: root
-    DB_DATABASE: app
-    AZURE_STORAGE_ACCOUNT_NAME: teststorageaccount
-    AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX: testenv
-    GOOGLE_MAPS_API_KEY: testkey
-    WORKOS_CLIENT_ID: testworkosclientid
-    WORKOS_API_KEY: testworkosapikey
-    WORKOS_COOKIE_PASSWORD: testworkoscookiepassword32pluscharslong
+        AZURE_WEBAPP_NAME: dancelife-app-service-[ENV_NAME]
+        AZURE_RESOURCE_GROUP: dancelife-rg-[ENV_NAME]
+        HEALTHCHECK_TIMEOUT_SECONDS: 600
+        HEALTHCHECK_INTERVAL_SECONDS: 10
+        TZ: UTC
+        PORT: 80
+        HOST: localhost
+        LOG_LEVEL: info
+        LOG_LEVEL_CLI: info
+        APP_KEY: testtesttesttest
+        HOST_ENV: dev
+        NODE_ENV: development
+        SESSION_DRIVER: cookie
+        DB_HOST: 127.0.0.1
+        DB_PORT: 5432
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_DATABASE: app
+        AZURE_STORAGE_ACCOUNT_NAME: teststorageaccount
+        AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX: testenv
+        GOOGLE_MAPS_API_KEY: testkey
+        WORKOS_CLIENT_ID: testworkosclientid
+        WORKOS_API_KEY: testworkosapikey
+        WORKOS_COOKIE_PASSWORD: testworkoscookiepassword32pluscharslong
 
     ```
   * Add the following block after the `npm install, build, and test` block
