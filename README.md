@@ -6,6 +6,11 @@
 * Add TXT records for each subdomain to supply the domain verification id
   * i.e. {"asuid.api-dev", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
 
+### Get App Service staging slot publish profile and update/create Github secret
+* Go to the App Service --> Deployment --> Deployment Slots --> staging, then download the publish profile
+* Go to the Github repository's settings and add the publish profile as a secret with a [PUBLISH_PROFILE_SECRET_NAME], to be used in the Github actions workflow
+  * If the secret already exists, update with the new publish profile value
+
 ### Modify generated Github actions workflow files
 * This is only necessary if the corresponding resources are newly created (i.e. via a new environment stack being created)
 * For `dancelife-web-portal`:
@@ -46,4 +51,4 @@
         cd ..
     ```
   * For the 'Deploy to Azure Web App' block, change the `package` to './build'
-  
+  * For the `publish-profile`, reference the secret name [PUBLISH_PROFILE_SECRET_NAME] from above 
