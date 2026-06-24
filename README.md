@@ -3,7 +3,7 @@
 ### Add DNS CNAME and TXT records to domain host
 * Add CNAME records for each of the environments being used for their unique subdomain
   * i.e. {"api-dev", "dancelife-app-service-dev.azurewebsites.net "}
-* Add TXT records for each subdomain to supply the domain verification id
+* Add TXT records for each App Service subdomain to supply the domain verification id
   * i.e. {"asuid.api-dev", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
 
 ### Get App Service staging slot publish profile and update/create Github secret
