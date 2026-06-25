@@ -2,6 +2,7 @@ module "app_core" {
     source = "../../modules/app-core"
 
     environment_name = var.environment_name
+    resource_group_region = "centralus"
 
     # Alerts configuration
     app_service_cpu_alert_enabled = true
