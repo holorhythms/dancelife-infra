@@ -284,6 +284,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     LOG_LEVEL_CLI                              = var.app_service_log_level
     NODE_ENV                                   = "production"
     PORT                                       = "8080"
+    PROGRAM_COMMUNITY_SECRET                   = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=program-community-secret)"
     SESSION_DRIVER                             = "cookie"
     WEBSITES_PORT                              = "8080"
     WORKOS_API_KEY                             = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-api-key)"
