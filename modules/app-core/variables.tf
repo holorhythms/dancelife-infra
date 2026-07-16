@@ -3,6 +3,11 @@ variable "environment_name" {
     type        = string
     description = "Name of the environment."
 }
+variable "workos_environment" {
+    type        = string
+    default     = "staging"
+    description = "Environment for WorkOS configuration ('staging' or 'prod')."
+}
 
 // Resource groups
 variable "resource_group_for_config" {

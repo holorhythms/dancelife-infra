@@ -287,9 +287,9 @@ resource "azurerm_linux_web_app" "main_app_service" {
     PROGRAM_COMMUNITY_SECRET                   = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=program-community-secret)"
     SESSION_DRIVER                             = "cookie"
     WEBSITES_PORT                              = "8080"
-    WORKOS_API_KEY                             = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-api-key)"
-    WORKOS_CLIENT_ID                           = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-client-id)"
-    WORKOS_COOKIE_PASSWORD                     = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-cookie-pw)"
+    WORKOS_API_KEY                             = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-api-key-${var.workos_environment})"
+    WORKOS_CLIENT_ID                           = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-client-id-${var.workos_environment})"
+    WORKOS_COOKIE_PASSWORD                     = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-cookie-pw-${var.workos_environment})"
     XDT_MicrosoftApplicationInsights_Mode      = "default"
   }
   https_only          = true

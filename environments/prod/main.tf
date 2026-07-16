@@ -1,7 +1,9 @@
 module "app_core" {
     source = "../../modules/app-core"
 
+    # Environemnt configuration
     environment_name = var.environment_name
+    workos_environment = "prod"
     resource_group_region = "centralus"
 
     # Alerts configuration

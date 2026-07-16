@@ -1,7 +1,9 @@
 module "app_core" {
     source = "../../modules/app-core"
 
+    # Environemnt configuration
     environment_name = var.environment_name
+    workos_environment = "staging"
 
     # Alerts configuration
     app_service_cpu_alert_enabled = true
