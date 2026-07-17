@@ -277,6 +277,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     DB_PORT                                    = "5432"
     DB_USER                                    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=postgres-user-${var.environment_name})"
     DB_SSL                                     = var.postgres_config_secure_transport == "ON" ? "true" : "false"
+    GOOGLE_FORMS_SERVICE_ACCOUNT_KEY           = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=google-forms-service-account-key)"
     GOOGLE_MAPS_API_KEY                        = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=google-maps-api-key)"
     HOST                                       = "0.0.0.0"
     HOST_ENV                                   = var.environment_name
