@@ -339,7 +339,9 @@ resource "azurerm_linux_web_app_slot" "main_app_service_staging_slot" {
 
   app_settings = azurerm_linux_web_app.main_app_service.app_settings
 
-  site_config {}
+  site_config {
+    ftps_state             = "FtpsOnly"
+  }
 }
 resource "azurerm_app_service_custom_hostname_binding" "main_app_service_hostname_binding" {
   hostname            = var.app_service_hostname
