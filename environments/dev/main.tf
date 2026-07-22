@@ -3,7 +3,7 @@ module "app_core" {
 
     # Environemnt configuration
     environment_name = var.environment_name
-    workos_environment = "staging"
+    workos_environment = "prod"
 
     # Alerts configuration
     app_service_cpu_alert_enabled = true
