@@ -7,7 +7,7 @@ module "app_core" {
 
     # Alerts configuration
     app_service_cpu_alert_enabled = true
-    app_service_failed_requests_alert_enabled = true
+    app_service_failed_requests_alert_enabled = false
     app_service_ping_test_consecutive_failures_alert_enabled = true
     main_app_db_active_connections_alert_enabled = true
     main_app_db_cpu_alert_enabled = true
