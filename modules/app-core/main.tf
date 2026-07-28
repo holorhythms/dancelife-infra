@@ -7,7 +7,6 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
   location            = var.resource_group_region
   name                = local.postgres_server_name
   resource_group_name = azurerm_resource_group.rg.name
-  zone                = "2"
   administrator_login               = data.azurerm_key_vault_secret.postgres_user.value
   administrator_password_wo         = data.azurerm_key_vault_secret.postgres_pw.value
   administrator_password_wo_version = "1"
@@ -34,6 +33,7 @@ resource "azurerm_postgresql_flexible_server" "main_app_db" {
 
   lifecycle {
     ignore_changes = [ 
+      zone,
       high_availability[0].standby_availability_zone
     ]
   }
