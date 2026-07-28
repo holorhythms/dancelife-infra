@@ -265,7 +265,7 @@ variable "app_service_failed_requests_alert_window_duration" {
 }
 variable "app_service_failed_requests_alert_severity" {
     type        = number
-    default     = 2
+    default     = 3
     description = "Severity for the App Service failed request percentage alert."
 }
 variable "app_service_cpu_alert_enabled" {
