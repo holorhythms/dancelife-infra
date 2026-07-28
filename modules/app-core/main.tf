@@ -473,7 +473,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "app_service_failed_re
       | where tostring(ResultCode) != "404"
       | summarize TotalRequests = count(), FailedRequests = countif(Success == false)
       | extend FailedRequestPercentage = iff(TotalRequests == 0, 0.0, todouble(FailedRequests) * 100.0 / todouble(TotalRequests))
-      | where FailedRequests >= 5
+      | where FailedRequests >= ${var.app_service_failed_requests_alert_threshold_count}
       | project FailedRequestPercentage
     KQL
 

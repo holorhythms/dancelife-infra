@@ -253,6 +253,11 @@ variable "app_service_failed_requests_alert_threshold_percentage" {
     default     = 20
     description = "Failed request percentage threshold that triggers the App Service alert."
 }
+variable "app_service_failed_requests_alert_threshold_count" {
+    type        = number
+    default     = 5
+    description = "Failed request count threshold that triggers the App Service alert."
+}
 variable "app_service_failed_requests_alert_evaluation_frequency" {
     type        = string
     default     = "PT15M"
