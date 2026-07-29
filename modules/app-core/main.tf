@@ -271,6 +271,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     AZURE_STORAGE_ACCOUNT_URL                  = "https://${local.storage_account_name}.blob.core.windows.net"
     AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
+    DB_CONNECTION                              = "postgres"
     DB_DATABASE                                = var.postgres_database_name
     DB_HOST                                    = "${local.postgres_server_name}.postgres.database.azure.com"
     DB_PASSWORD                                = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=postgres-pw-${var.environment_name})"
