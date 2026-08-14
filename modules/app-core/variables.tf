@@ -179,6 +179,10 @@ variable "postgres_config_secure_transport" {
 }
 
 # Azure Storage config
+variable "storage_account_container_name_prefix" {
+    type        = string
+    description = "Prefix for the main storage container names."
+}
 variable "storage_account_delete_logs_enabled" {
     type        = bool
     default     = true

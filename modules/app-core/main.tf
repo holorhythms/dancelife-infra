@@ -151,6 +151,11 @@ resource "azurerm_storage_account" "main_storage" {
   resource_group_name             = azurerm_resource_group.rg.name
   min_tls_version                 = "TLS1_2"
 }
+resource "azurerm_storage_container" "event_import_files" {
+  name                  = "${var.storage_account_container_name_prefix}-event-import-files"
+  storage_account_id  = azurerm_storage_account.main_storage.id
+  container_access_type = "private"
+}
 resource "azurerm_role_assignment" "storage_admins_assignment" {
   scope                = azurerm_storage_account.main_storage.id
   role_definition_name = "Storage Blob Data Contributor"

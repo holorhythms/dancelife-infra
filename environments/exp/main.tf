@@ -32,6 +32,7 @@ module "app_core" {
     postgres_config_secure_transport = "ON"
 
     # Storage account configuration
+    storage_account_container_name_prefix = "azure-${var.environment_name}"
     storage_account_delete_logs_enabled = true
     storage_account_read_logs_enabled = false
     storage_account_write_logs_enabled = true
