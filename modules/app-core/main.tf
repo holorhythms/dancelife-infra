@@ -294,7 +294,10 @@ resource "azurerm_linux_web_app" "main_app_service" {
     PORT                                       = "8080"
     PROGRAM_COMMUNITY_SECRET                   = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=program-community-secret)"
     SESSION_DRIVER                             = "cookie"
+    WEBJOBS_DISABLE_SCHEDULE                   = "0"
+    WEBJOBS_STOPPED                            = "0"
     WEBSITES_PORT                              = "8080"
+    WEBSITE_TIME_ZONE                          = "UTC"
     WORKOS_API_KEY                             = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-api-key-${var.workos_environment})"
     WORKOS_CLIENT_ID                           = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-client-id-${var.workos_environment})"
     WORKOS_COOKIE_PASSWORD                     = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=workos-cookie-pw-${var.workos_environment})"
@@ -349,6 +352,7 @@ resource "azurerm_linux_web_app_slot" "main_app_service_staging_slot" {
   app_settings = azurerm_linux_web_app.main_app_service.app_settings
 
   site_config {
+    always_on              = true
     ftps_state             = "FtpsOnly"
   }
 }
