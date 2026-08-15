@@ -17,6 +17,9 @@ module "app_core" {
     critical_alerts_action_group_email_receivers = var.critical_alerts_action_group_email_receivers
     critical_alerts_action_group_sms_receivers = var.critical_alerts_action_group_sms_receivers
 
+    # Scheduled jobs configuration
+    web_jobs_event_import_enabled = false
+
     # App Service configuration
     app_service_sku_name = "P1v3"
     app_service_hostname = "api.dancelife247.com"

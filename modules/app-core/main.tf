@@ -275,6 +275,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     AZURE_STORAGE_ACCOUNT_NAME                 = local.storage_account_name
     AZURE_STORAGE_ACCOUNT_URL                  = "https://${local.storage_account_name}.blob.core.windows.net"
     AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
+    AZURE_WEB_JOBS_SCHEDULED_EVENT_IMPORT_ENABLED = var.web_jobs_event_import_enabled ? "true" : "false"
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
     DB_CONNECTION                              = "postgres"
     DB_DATABASE                                = var.postgres_database_name
@@ -339,6 +340,8 @@ resource "azurerm_linux_web_app" "main_app_service" {
     }
   }
 }
+# Scheduled App Service jobs must be deployed as app content under App_Data/Jobs/Triggered,
+# not created via an ARM child resource upload without a real script payload.
 resource "azurerm_linux_web_app_slot" "main_app_service_staging_slot" {
   name           = "staging"
   app_service_id = azurerm_linux_web_app.main_app_service.id

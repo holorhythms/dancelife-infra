@@ -41,6 +41,12 @@ variable "critical_alerts_action_group_sms_receivers" {
     description = "SMS receivers for the critical alerts Action Group."
 }
 
+// Scheduled jobs config
+variable "web_jobs_event_import_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to enable the App Service event import scheduled Web Job."
+}
 
 // App Service config
 variable "app_service_sku_name" {
