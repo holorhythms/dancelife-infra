@@ -185,6 +185,11 @@ variable "postgres_config_secure_transport" {
 }
 
 # Azure Storage config
+variable "storage_common_account_name" {
+    type        = string
+    default     = "dancelifestoragecommon"
+    description = "Name of the common storage account."
+}
 variable "storage_account_container_name_prefix" {
     type        = string
     description = "Prefix for the main storage container names."

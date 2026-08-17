@@ -151,11 +151,6 @@ resource "azurerm_storage_account" "main_storage" {
   resource_group_name             = azurerm_resource_group.rg.name
   min_tls_version                 = "TLS1_2"
 }
-resource "azurerm_storage_container" "event_import_files" {
-  name                  = "${var.storage_account_container_name_prefix}-event-import-files"
-  storage_account_id  = azurerm_storage_account.main_storage.id
-  container_access_type = "private"
-}
 resource "azurerm_role_assignment" "storage_admins_assignment" {
   scope                = azurerm_storage_account.main_storage.id
   role_definition_name = "Storage Blob Data Contributor"
@@ -274,6 +269,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     APP_KEY                                    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=adonis-app-key)"
     AZURE_STORAGE_ACCOUNT_NAME                 = local.storage_account_name
     AZURE_STORAGE_ACCOUNT_URL                  = "https://${local.storage_account_name}.blob.core.windows.net"
+    AZURE_STORAGE_COMMON_ACCOUNT_NAME          = var.storage_common_account_name
     AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
     AZURE_WEB_JOBS_SCHEDULED_EVENT_IMPORT_ENABLED = var.web_jobs_event_import_enabled ? "true" : "false"
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
