@@ -17,7 +17,7 @@ module "app_core" {
     critical_alerts_action_group_sms_receivers = var.critical_alerts_action_group_sms_receivers
 
     # Scheduled jobs configuration
-    web_jobs_event_import_enabled = false
+    web_jobs_event_import_enabled = true
 
     # App Service configuration
     app_service_sku_name = "P0v3"
