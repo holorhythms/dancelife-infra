@@ -25,3 +25,7 @@ data "azuread_service_principal" "dancelife_app" {
   display_name = "dancelife-adonisjs"
 }
 data "azurerm_client_config" "current" {}
+data "azurerm_storage_account" "common_storage" {
+  name                = var.storage_common_account_name
+  resource_group_name = var.storage_common_account_resource_group_name
+}

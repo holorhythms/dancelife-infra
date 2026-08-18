@@ -190,6 +190,11 @@ variable "storage_common_account_name" {
     default     = "dancelifestoragecommon"
     description = "Name of the common storage account."
 }
+variable "storage_common_account_resource_group_name" {
+    type        = string
+    default     = "dancelife-rg-common"
+    description = "Resource group containing the common storage account."
+}
 variable "storage_account_container_name_prefix" {
     type        = string
     description = "Prefix for the main storage container names."
