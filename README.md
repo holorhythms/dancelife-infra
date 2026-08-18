@@ -19,3 +19,8 @@
   * For each environment, based on deployment strategy, copy the appropriate workflow template from the sample_github_workflows folder
   * Replace the contents of the generated github actions workflow file for the given environment with the template file contents
   * Replace instances of the environment placeholder with the actual environment name
+
+### Verify Webjobs runtime is enabled in App Service
+  * Go to App Service --> Settings --> Configuration
+  * Make sure the "Webjobs runtime" setting is checked
+    * It should be checked from the Terraform configuration settings, but behavior can sometimes be inconsistent
