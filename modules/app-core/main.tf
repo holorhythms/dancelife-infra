@@ -272,6 +272,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     AZURE_STORAGE_COMMON_ACCOUNT_NAME          = var.storage_common_account_name
     AZURE_STORAGE_CONTAINER_ENVIRONMENT_PREFIX = "azure-${var.environment_name}"
     AZURE_WEB_JOBS_SCHEDULED_EVENT_IMPORT_ENABLED = var.web_jobs_event_import_enabled ? "true" : "false"
+    AzureWebJobsStorage                        = azurerm_storage_account.main_storage.primary_connection_string
     ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
     DB_CONNECTION                              = "postgres"
     DB_DATABASE                                = var.postgres_database_name
