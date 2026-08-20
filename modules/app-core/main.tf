@@ -676,3 +676,35 @@ resource "azapi_resource_action" "web_portal_app_settings" {
     azurerm_static_web_app.web_portal,
   ]
 }
+resource "azurerm_static_web_app" "admin_dashboard" {
+  location            = var.resource_group_region
+  name                = local.admin_dashboard_name
+  repository_branch   = var.admin_dashboard_branch
+  repository_url      = var.admin_dashboard_repo_url
+  repository_token    = data.azurerm_key_vault_secret.github_pat.value
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_size            = var.admin_dashboard_sku_size
+  sku_tier            = var.admin_dashboard_sku_tier
+
+  lifecycle {
+    ignore_changes = [
+      app_settings,
+    ]
+  }
+}
+resource "azapi_resource_action" "admin_dashboard_app_settings" {
+  type        = "Microsoft.Web/staticSites@2022-09-01"
+  resource_id = azurerm_static_web_app.admin_dashboard.id
+  action      = "config/appsettings"
+  method      = "PUT"
+
+  body = {
+    properties = {}
+  }
+
+  response_export_values = []
+
+  depends_on = [
+    azurerm_static_web_app.admin_dashboard,
+  ]
+}

@@ -1,6 +1,7 @@
 // Locals definitions
 locals {
     # Resource names
+    admin_dashboard_name = "dancelife-admin-dashboard-${var.environment_name}"
     app_service_name = "dancelife-app-service-${var.environment_name}"
     app_service_insights_name = "dancelife-app-service-${var.environment_name}-insights"
     postgres_server_name = "dancelife-postgres-server-${var.environment_name}"

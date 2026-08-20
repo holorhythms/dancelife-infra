@@ -242,6 +242,28 @@ variable "web_portal_sku_tier" {
     description = "SKU tier for the web portal static web app."
 }
 
+# Admin dashboard static web app config
+variable "admin_dashboard_branch" {
+    type        = string
+    default     = "master"
+    description = "Branch of the repository to deploy for the admin dashboard static web app."
+}
+variable "admin_dashboard_repo_url" {
+    type        = string
+    default     = "https://github.com/Kressendo-Innovations/dancelife-admin-dashboard"
+    description = "URL of the repository for the admin dashboard static web app."
+}
+variable "admin_dashboard_sku_size" {
+    type        = string
+    default     = "Free"
+    description = "SKU size for the admin dashboard static web app."
+}
+variable "admin_dashboard_sku_tier" {
+    type        = string
+    default     = "Free"
+    description = "SKU tier for the admin dashboard static web app."
+}
+
 // Alerts config
 variable "ping_test_evaluation_frequency" {
     type        = string

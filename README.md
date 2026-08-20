@@ -15,6 +15,8 @@
 * This is only necessary if the corresponding resources are newly created (i.e. via a new environment stack being created)
 * For `dancelife-web-portal`:
   * At the `Build & Deploy` step, change `output_location` to "build"
+* For `dancelife-admin-dashboard`
+  * At the `Build & Deploy` step, change `output_location` to "dist"
 * For `dancelife-adonisjs`:
   * For each environment, based on deployment strategy, copy the appropriate workflow template from the sample_github_workflows folder
   * Replace the contents of the generated github actions workflow file for the given environment with the template file contents
@@ -23,4 +25,4 @@
 ### Verify Webjobs runtime is enabled in App Service
   * Go to App Service --> Settings --> Configuration
   * Make sure the "Webjobs runtime" setting is checked
-    * It should be checked from the Terraform configuration settings, but behavior can sometimes be inconsistent
+    * It should be checked automatically based on the Terraform configuration settings, but behavior can sometimes be inconsistent
