@@ -358,6 +358,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     cors {
       allowed_origins = concat(var.app_service_local_dev_origins, [
         "https://${azurerm_static_web_app.web_portal.default_host_name}",
+        "https://${azurerm_static_web_app.admin_dashboard.default_host_name}",
       ])
     }
   }

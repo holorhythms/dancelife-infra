@@ -113,7 +113,9 @@ variable "app_service_local_dev_origins" {
         "http://localhost:3000", 
         "http://localhost:3333", 
         "https://localhost:3000", 
-        "https://localhost:3333"
+        "https://localhost:3333",
+        "http://localhost:5173",
+        "https://localhost:5173"
     ]
     description = "List of allowed CORS origins for local development. These will be added to the App Service CORS settings"
 }
