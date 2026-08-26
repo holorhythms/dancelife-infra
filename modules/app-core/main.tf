@@ -287,6 +287,7 @@ resource "azurerm_app_service_source_control" "main_app_service_source_control" 
 }
 resource "azurerm_linux_web_app" "main_app_service" {
   app_settings = {
+    ADMIN_ROLE_SECRET                          = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=admin-role-secret)"
     APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app_service_insights.connection_string
     APP_KEY                                    = "@Microsoft.KeyVault(VaultName=dancelife-terraform;SecretName=adonis-app-key)"
     AZURE_STORAGE_ACCOUNT_NAME                 = local.storage_account_name
