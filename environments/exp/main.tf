@@ -44,4 +44,7 @@ module "app_core" {
     # Web portal configuration
     web_portal_sku_size = "Standard"
     web_portal_sku_tier = "Standard"
+
+    # Admin dashboard configuration
+    admin_dashboard_hostname = "admin-${var.environment_name}.dancelife247.com"
 }

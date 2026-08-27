@@ -42,4 +42,7 @@ module "app_core" {
     storage_account_read_logs_enabled = false
     storage_account_write_logs_enabled = true
     storage_account_log_retention_policy_days = 7
+
+    # Admin dashboard configuration
+    admin_dashboard_hostname = "admin.dancelife247.com"
 }

@@ -265,6 +265,10 @@ variable "admin_dashboard_sku_tier" {
     default     = "Free"
     description = "SKU tier for the admin dashboard static web app."
 }
+variable "admin_dashboard_hostname" {
+    type        = string
+    description = "Custom hostname for the admin dashboard static web app."
+}
 
 // Alerts config
 variable "ping_test_evaluation_frequency" {

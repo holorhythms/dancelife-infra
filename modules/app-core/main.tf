@@ -360,6 +360,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
       allowed_origins = concat(var.app_service_local_dev_origins, [
         "https://${azurerm_static_web_app.web_portal.default_host_name}",
         "https://${azurerm_static_web_app.admin_dashboard.default_host_name}",
+        "https://${var.admin_dashboard_hostname}"
       ])
     }
   }
@@ -701,7 +702,9 @@ resource "azapi_resource_action" "admin_dashboard_app_settings" {
   method      = "PUT"
 
   body = {
-    properties = {}
+    properties = {
+        VITE_API_BASE_URL = "https://${azurerm_linux_web_app.main_app_service.default_hostname}/api/v1"
+    }
   }
 
   response_export_values = []
@@ -709,4 +712,9 @@ resource "azapi_resource_action" "admin_dashboard_app_settings" {
   depends_on = [
     azurerm_static_web_app.admin_dashboard,
   ]
+}
+resource "azurerm_static_web_app_custom_domain" "admin_dashboard_hostname_binding" {
+  static_web_app_id = azurerm_static_web_app.admin_dashboard.id
+  domain_name       = var.admin_dashboard_hostname
+  validation_type   = "cname-delegation"
 }
