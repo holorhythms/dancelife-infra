@@ -356,6 +356,21 @@ resource "azurerm_linux_web_app" "main_app_service" {
     application_stack {
       node_version = "22-lts"
     }
+    dynamic "ip_restriction" {
+      for_each = var.front_door_restrict_origin_to_front_door_enabled ? [1] : []
+
+      content {
+        service_tag = "AzureFrontDoor.Backend"
+        action      = "Allow"
+        priority    = 100
+        name        = "AllowFrontDoor"
+
+        headers {
+          x_azure_fdid = [azurerm_cdn_frontdoor_profile.main.resource_guid]
+        }
+      }
+    }
+    ip_restriction_default_action = var.front_door_restrict_origin_to_front_door_enabled ? "Deny" : "Allow"
     cors {
       allowed_origins = concat(var.app_service_local_dev_origins, [
         "https://${azurerm_static_web_app.web_portal.default_host_name}",
@@ -395,6 +410,93 @@ resource "azurerm_app_service_certificate_binding" "ssl_binding" {
   hostname_binding_id = azurerm_app_service_custom_hostname_binding.main_app_service_hostname_binding.id
   certificate_id      = azurerm_app_service_managed_certificate.main_app_service_certificate.id
   ssl_state           = "SniEnabled"
+}
+resource "azurerm_cdn_frontdoor_profile" "main" {
+  name                = local.front_door_profile_name
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_name            = var.front_door_sku_name
+}
+resource "azurerm_cdn_frontdoor_endpoint" "main_app_service" {
+  name                     = local.front_door_endpoint_name
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+}
+resource "azurerm_cdn_frontdoor_origin_group" "main_app_service" {
+  name                     = "og-${local.app_service_name}"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+
+  load_balancing {
+    sample_size                 = 4
+    successful_samples_required = 3
+  }
+
+  health_probe {
+    path                = var.app_service_ping_test_path
+    protocol            = "Https"
+    request_type        = "GET"
+    interval_in_seconds = 100
+  }
+}
+resource "azurerm_cdn_frontdoor_origin" "main_app_service" {
+  name                          = "origin-${local.app_service_name}"
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.main_app_service.id
+
+  enabled                        = true
+  host_name                      = azurerm_linux_web_app.main_app_service.default_hostname
+  http_port                      = 80
+  https_port                     = 443
+  origin_host_header             = azurerm_linux_web_app.main_app_service.default_hostname
+  priority                       = 1
+  weight                         = 1000
+  certificate_name_check_enabled = true
+}
+resource "azurerm_cdn_frontdoor_custom_domain" "main_app_service" {
+  name                     = "cd-${local.app_service_name}"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+  host_name                = var.app_service_hostname
+
+  tls {
+    certificate_type = "ManagedCertificate"
+  }
+}
+# Domain must remain associated with the route for the managed certificate to be issued and traffic to be served.
+resource "azurerm_cdn_frontdoor_route" "main_app_service" {
+  name                            = "route-${local.app_service_name}"
+  cdn_frontdoor_endpoint_id       = azurerm_cdn_frontdoor_endpoint.main_app_service.id
+  cdn_frontdoor_origin_group_id   = azurerm_cdn_frontdoor_origin_group.main_app_service.id
+  cdn_frontdoor_origin_ids        = [azurerm_cdn_frontdoor_origin.main_app_service.id]
+  cdn_frontdoor_custom_domain_ids = [azurerm_cdn_frontdoor_custom_domain.main_app_service.id]
+  link_to_default_domain         = false
+
+  supported_protocols    = ["Http", "Https"]
+  patterns_to_match      = ["/*"]
+  forwarding_protocol    = "HttpsOnly"
+  https_redirect_enabled = true
+}
+resource "azurerm_cdn_frontdoor_firewall_policy" "main_app_service" {
+  name                = local.front_door_waf_policy_name
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_name            = azurerm_cdn_frontdoor_profile.main.sku_name
+  mode                = var.front_door_waf_mode
+}
+resource "azurerm_cdn_frontdoor_security_policy" "main_app_service" {
+  name                     = "sp-${local.app_service_name}"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+
+  security_policies {
+    firewall {
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.main_app_service.id
+
+      association {
+        domain {
+          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.main_app_service.id
+        }
+        domain {
+          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_custom_domain.main_app_service.id
+        }
+        patterns_to_match = ["/*"]
+      }
+    }
+  }
 }
 resource "azurerm_role_assignment" "app_service_keyvault_assignment" {
   scope                = data.azurerm_key_vault.dancelife_vault.id

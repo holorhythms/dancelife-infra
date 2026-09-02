@@ -14,6 +14,16 @@ output "app_service_domain_verification_id" {
     value = azurerm_linux_web_app.main_app_service.custom_domain_verification_id
     sensitive = true
 }
+output "front_door_profile_id" {
+    value = azurerm_cdn_frontdoor_profile.main.id
+}
+output "front_door_endpoint_hostname" {
+    value = azurerm_cdn_frontdoor_endpoint.main_app_service.host_name
+}
+output "front_door_custom_domain_validation_token" {
+    value = azurerm_cdn_frontdoor_custom_domain.main_app_service.validation_token
+    sensitive = true
+}
 output "azure_storage_account_id" {
     value = azurerm_storage_account.main_storage.id
 }

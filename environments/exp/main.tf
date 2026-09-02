@@ -26,6 +26,9 @@ module "app_core" {
     app_service_sampling_percentage = 100
     app_service_github_action_generate_workflow_file_enabled = false
 
+    # Front Door configuration
+    front_door_restrict_origin_to_front_door_enabled = true
+
     # PostgreSQL configuration
     postgres_server_sku_name = "B_Standard_B2s"
     postgres_config_auto_grow_enabled = false

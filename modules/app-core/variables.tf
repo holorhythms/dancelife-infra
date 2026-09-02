@@ -145,6 +145,27 @@ variable "app_service_sampling_percentage" {
     description = "Percentage of requests to sample for Application Insights."
 }
 
+// Front Door / WAF config
+variable "front_door_sku_name" {
+    type        = string
+    default     = "Standard_AzureFrontDoor"
+    description = "SKU for the Azure Front Door profile placed in front of the main App Service."
+}
+variable "front_door_waf_mode" {
+    type        = string
+    default     = "Prevention"
+    description = "Mode for the Front Door WAF policy protecting the main App Service (Prevention or Detection)."
+    validation {
+        condition     = contains(["Prevention", "Detection"], var.front_door_waf_mode)
+        error_message = "front_door_waf_mode must be either 'Prevention' or 'Detection'."
+    }
+}
+variable "front_door_restrict_origin_to_front_door_enabled" {
+    type        = bool
+    default     = false
+    description = "Whether or not to restrict the main App Service origin so it only accepts traffic from this Front Door instance. Enable only once DNS for app_service_hostname points at the Front Door endpoint."
+}
+
 // PostgreSQL config
 variable "postgres_database_name" {
     type        = string
