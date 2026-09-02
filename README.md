@@ -1,10 +1,13 @@
 ## Manual actions after applying Terraform configuration
 
 ### Add DNS CNAME and TXT records to domain host
-* Add CNAME records for each of the environments being used for their unique subdomain
+* Add CNAME records for App Service for each of the environments being used for their unique subdomain
   * i.e. {"api-dev", "dancelife-app-service-dev.azurewebsites.net "}
 * Add TXT records for each App Service subdomain to supply the domain verification id
   * i.e. {"asuid.api-dev", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
+* If using Front Door, instead set the App Service subdomains to the Front Door endpoints and TXT records instead. Examples:
+  * CNAME: {"api-dev", "dancelife-app-service-dev-hgacb8d0e5gnbyb2.z03.azurefd.net "}
+  * TXT: {"_dnsauth.api-dev", "_3h4gzmrwv4o068mggc0i6i5z98vzb4l"}
 
 ### Get App Service staging slot publish profile and update/create Github secret
 * Go to the App Service --> Deployment --> Deployment Slots --> staging, then download the publish profile
