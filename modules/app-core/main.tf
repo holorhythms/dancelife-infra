@@ -477,6 +477,111 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "main_app_service" {
   resource_group_name = azurerm_resource_group.rg.name
   sku_name            = azurerm_cdn_frontdoor_profile.main.sku_name
   mode                = var.front_door_waf_mode
+  request_body_check_enabled = true
+
+  custom_rule {
+    name                              = "RateLimitPerIp"
+    priority                          = 10
+    type                              = "RateLimitRule"
+    action                            = "Block"
+    rate_limit_duration_in_minutes    = 1
+    rate_limit_threshold               = var.front_door_rate_limit_per_minute
+
+    match_condition {
+      match_variable     = "RemoteAddr"
+      operator           = "IPMatch"
+      negation_condition = false
+      match_values       = ["0.0.0.0/0"]
+    }
+  }
+
+  custom_rule {
+    name     = "BlockLargeRequestBodies"
+    priority = 20
+    type     = "MatchRule"
+    action   = "Block"
+
+    match_condition {
+      match_variable     = "RequestBody"
+      operator           = "GreaterThan"
+      negation_condition = false
+      match_values       = [var.front_door_request_body_limit_bytes]
+    }
+  }
+
+  custom_rule {
+    name     = "BlockDisallowedHttpMethods"
+    priority = 30
+    type     = "MatchRule"
+    action   = "Block"
+
+    match_condition {
+      match_variable     = "RequestMethod"
+      operator           = "Equal"
+      negation_condition = true
+      match_values       = ["GET", "POST", "PUT", "DELETE"]
+    }
+  }
+
+  custom_rule {
+    name     = "BlockObviousSqliQueryString"
+    priority = 40
+    type     = "MatchRule"
+    action   = "Block"
+
+    match_condition {
+      match_variable     = "QueryString"
+      operator           = "Contains"
+      negation_condition = false
+      match_values       = ["union select", "select * from", "drop table", "insert into", "delete from", "' or ", "' and "]
+      transforms         = ["Lowercase", "UrlDecode", "RemoveNulls"]
+    }
+  }
+
+  custom_rule {
+    name     = "BlockObviousSqliRequestBody"
+    priority = 50
+    type     = "MatchRule"
+    action   = "Block"
+
+    match_condition {
+      match_variable     = "RequestBody"
+      operator           = "Contains"
+      negation_condition = false
+      match_values       = ["union select", "select * from", "drop table", "insert into", "delete from", "' or ", "' and "]
+      transforms         = ["Lowercase", "UrlDecode", "RemoveNulls"]
+    }
+  }
+
+  custom_rule {
+    name     = "BlockObviousXssQueryString"
+    priority = 60
+    type     = "MatchRule"
+    action   = "Block"
+
+    match_condition {
+      match_variable     = "QueryString"
+      operator           = "Contains"
+      negation_condition = false
+      match_values       = ["<script", "javascript:", "onerror=", "onload=", "onclick="]
+      transforms         = ["Lowercase", "UrlDecode", "RemoveNulls"]
+    }
+  }
+
+  custom_rule {
+    name     = "BlockObviousXssRequestBody"
+    priority = 70
+    type     = "MatchRule"
+    action   = "Block"
+
+    match_condition {
+      match_variable     = "RequestBody"
+      operator           = "Contains"
+      negation_condition = false
+      match_values       = ["<script", "javascript:", "onerror=", "onload=", "onclick="]
+      transforms         = ["Lowercase", "UrlDecode", "RemoveNulls"]
+    }
+  }
 }
 resource "azurerm_cdn_frontdoor_security_policy" "main_app_service" {
   name                     = "sp-${local.app_service_name}"

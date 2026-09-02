@@ -165,6 +165,16 @@ variable "front_door_restrict_origin_to_front_door_enabled" {
     default     = false
     description = "Whether or not to restrict the main App Service origin so it only accepts traffic from this Front Door instance. Enable only once DNS for app_service_hostname points at the Front Door endpoint."
 }
+variable "front_door_rate_limit_per_minute" {
+    type        = number
+    default     = 300
+    description = "Rate limit for the Front Door WAF policy protecting the main App Service."
+}
+variable "front_door_request_body_limit_bytes" {
+    type        = number
+    default     = 5242880
+    description = "Request body size limit in bytes for the Front Door WAF policy protecting the main App Service."
+}
 
 // PostgreSQL config
 variable "postgres_database_name" {
