@@ -603,6 +603,23 @@ resource "azurerm_cdn_frontdoor_security_policy" "main_app_service" {
     }
   }
 }
+resource "azurerm_monitor_diagnostic_setting" "main_app_service_front_door_diagnostics" {
+  name                       = "${local.app_service_name}-front-door-diagnostics"
+  target_resource_id         = azurerm_cdn_frontdoor_profile.main.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.app_service_insights_workspace.id
+
+  enabled_log {
+    category = "FrontDoorAccessLog"
+  }
+
+  enabled_log {
+    category = "FrontDoorHealthProbeLog"
+  }
+
+  enabled_log {
+    category = "FrontDoorWebApplicationFirewallLog"
+  }
+}
 resource "azurerm_role_assignment" "app_service_keyvault_assignment" {
   scope                = data.azurerm_key_vault.dancelife_vault.id
   role_definition_name = "Key Vault Secrets User"
