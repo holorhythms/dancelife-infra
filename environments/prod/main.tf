@@ -28,6 +28,9 @@ module "app_core" {
     app_service_log_level = "info"
     app_service_sampling_percentage = 100
 
+    # Front Door configuration
+    front_door_restrict_origin_to_front_door_enabled = true
+
     # PostgreSQL configuration
     postgres_server_sku_name = "GP_Standard_D2s_v3"
     postgres_config_auto_grow_enabled = true

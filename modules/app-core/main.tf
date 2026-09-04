@@ -519,7 +519,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "main_app_service" {
       match_variable     = "RequestMethod"
       operator           = "Equal"
       negation_condition = true
-      match_values       = ["GET", "POST", "PUT", "DELETE"]
+      match_values       = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     }
   }
 
