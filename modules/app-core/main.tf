@@ -354,7 +354,7 @@ resource "azurerm_linux_web_app" "main_app_service" {
     ftps_state             = "FtpsOnly"
     vnet_route_all_enabled = true
     application_stack {
-      node_version = "22-lts"
+      node_version = "24-lts"
     }
     dynamic "ip_restriction" {
       for_each = var.front_door_restrict_origin_to_front_door_enabled ? [1] : []
